@@ -7,6 +7,7 @@
 
 #include "console.h"
 #include "typingconverter.h"
+#include "aboutscreen.h"
 
 #include "dictionarycreator.h"
 
@@ -46,7 +47,9 @@ void SpeechRecognition::on_actionConvert_Typing_triggered()
 
 void SpeechRecognition::on_actionAbout_triggered()
 {
+    AboutScreen *screen = new AboutScreen();
 
+    screen->show();
 }
 
 void SpeechRecognition::on_btnPromtBrowse_clicked()

@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>images/chat.png</file>
         <file>images/shuffle.png</file>
+        <file>images/cover_image.png</file>
+        <file>images/quality.png</file>
     </qresource>
 </RCC>

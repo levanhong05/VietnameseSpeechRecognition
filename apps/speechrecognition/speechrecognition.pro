@@ -29,15 +29,18 @@ SOURCES +=  main.cpp\
             speechrecognition.cpp \
             converter.cpp \
             typingconverter.cpp \
-    dictionarycreator.cpp
+    dictionarycreator.cpp \
+    aboutscreen.cpp
 
 HEADERS  += speechrecognition.h \
             converter.h \
             typingconverter.h \
-    dictionarycreator.h
+    dictionarycreator.h \
+    aboutscreen.h
 
 FORMS    += speechrecognition.ui \
-            typingconverter.ui
+            typingconverter.ui \
+    aboutscreen.ui
 
 win32:LIBS += -L$$OUT_PWD/../../dist/bin/ -llogger
 unix:LIBS += -L$$OUT_PWD/../../modules/logger/ -llogger
