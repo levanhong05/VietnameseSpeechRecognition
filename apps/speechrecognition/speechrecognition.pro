@@ -41,3 +41,22 @@ win32:RC_FILE = speechrecognition.rc
 
 RESOURCES += \
     speech_res.qrc
+
+win32 {
+    SOURCEPATH1 = $$PWD/config
+    SOURCEPATH2 = $$PWD/perl
+    DESTPATH1 = $$OUT_PWD/../../dist/bin/config
+    DESTPATH2 = $$OUT_PWD/../../dist/bin/perl
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\)"
+}
+
+unix {
+    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/../bin/"
+}
+
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+
+QMAKE_EXTRA_TARGETS += first copydata
+
