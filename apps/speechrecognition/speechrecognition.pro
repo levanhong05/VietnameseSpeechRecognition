@@ -28,11 +28,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES +=  main.cpp\
             speechrecognition.cpp \
             converter.cpp \
-            typingconverter.cpp
+            typingconverter.cpp \
+    dictionarycreator.cpp
 
 HEADERS  += speechrecognition.h \
             converter.h \
-            typingconverter.h
+            typingconverter.h \
+    dictionarycreator.h
 
 FORMS    += speechrecognition.ui \
             typingconverter.ui
