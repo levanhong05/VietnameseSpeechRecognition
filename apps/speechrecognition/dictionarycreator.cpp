@@ -62,7 +62,7 @@ void DictionaryCreator::create()
     while (!in.atEnd()) {
         line = in.readLine();
 
-        if (line.startsWith("#")) {
+        if (line.startsWith("//")) {
             continue;
         }
 
@@ -90,8 +90,8 @@ void DictionaryCreator::create()
 
     QTextStream out(&grammarFile);
 
-    out << "#grammar.txt" << endl << endl;
-    out << "$word = " << words.join(" | ") << endl << endl;
+    out << "//grammar.txt" << endl << endl;
+    out << "$word = " << words.join(" | ") << ";" << endl << endl;
     out << "(<$word>)" << endl;
 
     QFile dictFile(QApplication::applicationDirPath() + "/text/dict.dct");
