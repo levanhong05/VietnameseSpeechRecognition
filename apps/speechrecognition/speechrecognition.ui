@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SpeechRecognition</class>
+ <widget class="QMainWindow" name="SpeechRecognition">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>673</width>
+    <height>441</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SpeechRecognition</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="speech_res.qrc">
+    <normaloff>:/images/chat.png</normaloff>:/images/chat.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>673</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionConvert_Typing"/>
+   </widget>
+   <addaction name="menuTools"/>
+  </widget>
+  <action name="actionConvert_Typing">
+   <property name="icon">
+    <iconset resource="speech_res.qrc">
+     <normaloff>:/images/shuffle.png</normaloff>:/images/shuffle.png</iconset>
+   </property>
+   <property name="text">
+    <string>Convert Typing</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="speech_res.qrc"/>
+ </resources>
+ <connections/>
+</ui>
