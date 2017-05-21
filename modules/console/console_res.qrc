@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/console">
+        <file>images/alarm.svg</file>
+        <file>images/delete.svg</file>
+        <file>images/save.svg</file>
+        <file>images/setting.svg</file>
+    </qresource>
+</RCC>

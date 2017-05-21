@@ -25,17 +25,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
-        speechrecognition.cpp \
-    converter.cpp \
-    typingconverter.cpp
+SOURCES +=  main.cpp\
+            speechrecognition.cpp \
+            converter.cpp \
+            typingconverter.cpp
 
 HEADERS  += speechrecognition.h \
-    converter.h \
-    typingconverter.h
+            converter.h \
+            typingconverter.h
 
 FORMS    += speechrecognition.ui \
-    typingconverter.ui
+            typingconverter.ui
+
+win32:LIBS += -L$$OUT_PWD/../../dist/bin/ -llogger
+unix:LIBS += -L$$OUT_PWD/../../modules/logger/ -llogger
+
+INCLUDEPATH += $$PWD/../../modules/logger
+DEPENDPATH += $$PWD/../../modules/logger
+
+unix:LIBS += -L$$OUT_PWD/../../modules/console -lconsole
+win32:LIBS += -L$$OUT_PWD/../../dist/bin -lconsole
+
+INCLUDEPATH += $$PWD/../../modules/console
+DEPENDPATH += $$PWD/../../modules/console
 
 win32:RC_FILE = speechrecognition.rc
 

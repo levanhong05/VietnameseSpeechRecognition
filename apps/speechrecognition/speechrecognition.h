@@ -17,6 +17,8 @@ public:
 private slots:
     void on_actionConvert_Typing_triggered();
 
+    void on_actionAbout_triggered();
+
 private:
   Ui::SpeechRecognition *ui;
 };

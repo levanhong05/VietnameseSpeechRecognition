@@ -1,0 +1,16 @@
+ src/DailyRollingFileAppender.cpp |  2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/src/DailyRollingFileAppender.cpp b/src/DailyRollingFileAppender.cpp
+index a20913f..412664f 100644
+--- a/src/DailyRollingFileAppender.cpp
++++ b/src/DailyRollingFileAppender.cpp
+@@ -24,6 +24,8 @@
+ #include <string.h>
+ #include <iostream>
+ 
++#include <time.h>
++
+ #ifdef LOG4CPP_HAVE_SSTREAM
+ #include <sstream>
+ #include <iomanip>

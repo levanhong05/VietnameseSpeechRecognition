@@ -4,4 +4,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     3rdparty \
+    modules \
     apps

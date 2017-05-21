@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>SpeechRecognition</string>
+   <string>Speech Recognition</string>
   </property>
   <property name="windowIcon">
    <iconset resource="speech_res.qrc">
@@ -33,7 +33,14 @@
     </property>
     <addaction name="actionConvert_Typing"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionConvert_Typing">
    <property name="icon">
@@ -42,6 +49,11 @@
    </property>
    <property name="text">
     <string>Convert Typing</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

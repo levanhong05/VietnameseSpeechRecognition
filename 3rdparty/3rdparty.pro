@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += \
-    htk
+    htk \
+    log4cpp
