@@ -38,12 +38,12 @@ QString Executors::shortPathName(const QString &file)
 
 void Executors::execWordNet(QString grammar, QString wordnet)
 {
-    ExecutingJob *job = new ExecutingJob(tr("Merging"));
+    ExecutingJob *job = new ExecutingJob(tr("WordNet"));
     this->_jobs.append(job);
 
     job->exec->setName("createWordNet");
 
-    WaitingDialog *wait = new WaitingDialog(tr("Create Word Network..."));
+    WaitingDialog *wait = new WaitingDialog(tr("Create WordNet..."));
     wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
@@ -57,7 +57,7 @@ void Executors::execWordNet(QString grammar, QString wordnet)
     job->exec->start();
 
 #ifdef Q_OS_LINUX
-    job->exec->directExecute("source /opt/htk141/etc/bashrc");
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
 #else
     job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
 #endif
