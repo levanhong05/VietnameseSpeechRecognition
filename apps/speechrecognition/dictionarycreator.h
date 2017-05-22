@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QThread>
 
+namespace VietnameseSpeechRecognition {
+
 class DictionaryCreator : public QThread
 {
     Q_OBJECT
@@ -31,5 +33,7 @@ private:
     bool m_working;
 
 };
+
+}
 
 #endif // DICTIONARYCREATOR_H

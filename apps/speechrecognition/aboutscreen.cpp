@@ -3,6 +3,8 @@
 
 #include <QDesktopWidget>
 
+using namespace VietnameseSpeechRecognition;
+
 AboutScreen::AboutScreen(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutScreen)

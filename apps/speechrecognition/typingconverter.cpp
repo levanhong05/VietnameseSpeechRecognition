@@ -8,6 +8,8 @@
 
 #include "converter.h"
 
+using namespace VietnameseSpeechRecognition;
+
 TypingConverter::TypingConverter(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::TypingConverter)

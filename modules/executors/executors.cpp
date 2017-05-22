@@ -6,6 +6,8 @@
 #include <QInputDialog>
 #include <QApplication>
 
+#include <QDebug>
+
 #include "executors.h"
 #include "loglistmodel.h"
 
@@ -49,12 +51,16 @@ void Executors::execWordNet(QString grammar, QString wordnet)
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
 
-    connect(wait, SIGNAL(abort()), job->exec, SLOT(terminate()));
     connect(job->exec, SIGNAL(finished(int)), wait, SLOT(close()));
     connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
-    connect(job->exec, SIGNAL(lineChange(uint)), wait, SLOT(updatePercent(uint)));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
 
     job->exec->start();
+
+    wait->show();
 
 #ifdef Q_OS_LINUX
     job->exec->directExecute("source /opt/htk341/etc/bashrc");
@@ -63,7 +69,12 @@ void Executors::execWordNet(QString grammar, QString wordnet)
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HParse " + shortPathName(grammar) + " " + shortPathName(wordnet));
+    //job->exec->execute("HParse " + shortPathName(WorkCase::currentCase()->getWorkspace() + "/" + grammar) +
+    //                   " " + shortPathName(WorkCase::currentCase()->getWorkspace() + "/" + wordnet));
+
+    job->exec->execute("HParse " + WorkCase::currentCase()->getWorkspace() + "/" + grammar +
+                       " " + WorkCase::currentCase()->getWorkspace() + "/" + wordnet);
+
     job->exec->waitForFinished();
 
     if (job->exec->lastExitCode() != 0) {
@@ -71,6 +82,76 @@ void Executors::execWordNet(QString grammar, QString wordnet)
     } else {
         console.logSuccess(tr("Create word network successfull."));
     }
+}
+
+void Executors::execMonophones(QString prompts, QString wlist, QString monophones, QString dstDict, QString srcDict)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Monophones"));
+    this->_jobs.append(job);
+
+    job->exec->setName("createMonophones");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Create Monophones..."));
+    wait->setUsingPerCent(true);
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(finished(int)), wait, SLOT(close()));
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    QString cmd = "perl " + QApplication::applicationDirPath() + "/perl/prompts2wlist.pl " +
+                  WorkCase::currentCase()->getWorkspace() + "/" + prompts + " " +
+                  WorkCase::currentCase()->getWorkspace() + "/" + wlist;
+
+    qDebug() << cmd;
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/prompts2wlist.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + prompts + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + wlist);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HDMan -m -w " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + wlist + " -n " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + monophones + " -l dlog " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dstDict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + srcDict);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "perl/mkMonophones.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + monophones + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones1");
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create monophones."));
+    } else {
+        console.logSuccess(tr("Create monophones successfull."));
+    }
+}
+
+void Executors::onErrorLogging(QString log)
+{
+    console.logError(log);
 }
 
 void Executors::abort()

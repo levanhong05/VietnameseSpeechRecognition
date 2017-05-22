@@ -5,6 +5,8 @@
 
 #include "speechrecognition.h"
 
+using namespace VietnameseSpeechRecognition;
+
 class Application : public QApplication
 {
 public:

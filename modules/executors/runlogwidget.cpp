@@ -24,8 +24,3 @@ void RunLogWidget::setLogView(QListView *logView)
 {
     m_logView = logView;
 }
-
-void RunLogWidget::on_btnClearLog_clicked()
-{
-    emit clear();
-}

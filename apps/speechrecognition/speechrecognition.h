@@ -7,6 +7,8 @@ namespace Ui {
   class SpeechRecognition;
 }
 
+namespace VietnameseSpeechRecognition {
+
 class SpeechRecognition : public QMainWindow
 {
   Q_OBJECT
@@ -30,9 +32,20 @@ private slots:
 
     void on_actionQuit_triggered();
 
+    void on_btnCreateWordNet_clicked();
+
+    void on_btnCreateMonophone_clicked();
+
+private:
+    void preparingData();
+
+    void copyPath(QString src, QString dst);
+
 private:
     Ui::SpeechRecognition *ui;
 
 };
+
+}
 
 #endif // SPEECHRECOGNITION_H

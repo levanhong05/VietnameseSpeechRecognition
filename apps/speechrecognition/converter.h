@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+namespace VietnameseSpeechRecognition {
+
 class Converter
 {
 public:
@@ -22,5 +24,7 @@ private:
     QStringList _vniText;
 
 };
+
+}
 
 #endif // CONVERTER_H

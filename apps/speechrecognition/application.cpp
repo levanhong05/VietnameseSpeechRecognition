@@ -1,8 +1,6 @@
 #include "application.h"
 #include "workcase.h"
 
-using namespace VietnameseSpeechRecognition;
-
 Application::Application(int &argc, char **argv)
     : QApplication(argc, argv)
 {

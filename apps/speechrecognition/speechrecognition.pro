@@ -31,18 +31,23 @@ SOURCES +=  main.cpp\
             typingconverter.cpp \
             dictionarycreator.cpp \
             aboutscreen.cpp \
-            application.cpp
+            application.cpp \
+    waitingdialog.cpp \
+    recognitor.cpp
 
 HEADERS  += speechrecognition.h \
             converter.h \
             typingconverter.h \
             dictionarycreator.h \
             aboutscreen.h \
-            application.h
+            application.h \
+    waitingdialog.h \
+    recognitor.h
 
 FORMS    += speechrecognition.ui \
             typingconverter.ui \
-            aboutscreen.ui
+            aboutscreen.ui \
+    waitingdialog.ui
 
 win32:LIBS += -L$$OUT_PWD/../../dist/bin/ -llogger
 unix:LIBS += -L$$OUT_PWD/../../modules/logger/ -llogger
@@ -83,14 +88,16 @@ win32 {
     SOURCEPATH1 = $$PWD/config
     SOURCEPATH2 = $$PWD/perl
     SOURCEPATH3 = $$PWD/HTK
+    SOURCEPATH4 = $$PWD/text
     DESTPATH1 = $$OUT_PWD/../../dist/bin/config
     DESTPATH2 = $$OUT_PWD/../../dist/bin/perl
     DESTPATH3 = $$OUT_PWD/../../dist/bin/HTK
-    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH3,/,\\) $$replace(DESTPATH3,/,\\)"
+    DESTPATH4 = $$OUT_PWD/../../dist/bin/text
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH3,/,\\) $$replace(DESTPATH3,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH4,/,\\) $$replace(DESTPATH4,/,\\)"
 }
 
 unix {
-    copydata.commands = "$(COPY_DIR) $$PWD/config $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/perl $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/HTK $$OUT_PWD/../bin/"
+    copydata.commands = "$(COPY_DIR) $$PWD/config $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/perl $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/HTK $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/text $$OUT_PWD/../bin/"
 }
 
 first.depends = $(first) copydata

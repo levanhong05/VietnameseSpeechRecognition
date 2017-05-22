@@ -18,9 +18,6 @@ public:
     QListView *logView() const;
     void setLogView(QListView *logView);
 
-private slots:
-    void on_btnClearLog_clicked();
-
 signals:
     void clear();
 

@@ -7,6 +7,8 @@ namespace Ui {
 class AboutScreen;
 }
 
+namespace VietnameseSpeechRecognition {
+
 class AboutScreen : public QDialog
 {
     Q_OBJECT
@@ -17,5 +19,7 @@ public:
 private:
     Ui::AboutScreen *ui;
 };
+
+}
 
 #endif // ABOUTSCREEN_H

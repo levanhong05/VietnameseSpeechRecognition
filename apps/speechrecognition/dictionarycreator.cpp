@@ -5,6 +5,10 @@
 #include <QTextStream>
 #include <QApplication>
 
+#include "workcase.h"
+
+using namespace VietnameseSpeechRecognition;
+
 DictionaryCreator::DictionaryCreator(QObject *parent) :
     QThread(parent)
 {
@@ -78,33 +82,22 @@ void DictionaryCreator::create()
 
     qSort(words.begin(), words.end());
 
-    QDir dir(QApplication::applicationDirPath() + "/text");
-
-    if (!dir.exists()) {
-        dir.mkpath(QApplication::applicationDirPath() + "/text");
-    }
-
-    QFile grammarFile(QApplication::applicationDirPath() + "/text/grammar.txt");
+    //Write grammar file
+    QFile grammarFile(WorkCase::currentCase()->getWorkspace() + "/text/grammar.txt");
 
     grammarFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
     QTextStream out(&grammarFile);
 
-    out << "//grammar.txt" << endl << endl;
     out << "$word = " << words.join(" | ") << ";" << endl << endl;
     out << "(<$word>)" << endl;
 
-    QFile dictFile(QApplication::applicationDirPath() + "/text/dict.dct");
+    grammarFile.close();
 
-    dictFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
-
-    QTextStream outDic(&dictFile);
-
-    outDic << "#dict.dct" << endl << endl;
-
+    //Read Vietnamese phonemes
     QStringList phonemes;
 
-    QFile phonemeFile(QApplication::applicationDirPath() + "/text/phoneme.txt");
+    QFile phonemeFile(WorkCase::currentCase()->getWorkspace() + "/text/phoneme.txt");
 
     if (!phonemeFile.open(QIODevice::ReadOnly)) {
         return;
@@ -117,6 +110,15 @@ void DictionaryCreator::create()
 
         phonemes.append(line);
     }
+
+    phonemeFile.close();
+
+    //Write dictionary file
+    QFile dictFile(WorkCase::currentCase()->getWorkspace() + "/text/dict.dct");
+
+    dictFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
+
+    QTextStream outDic(&dictFile);
 
     foreach (QString word, words) {
         outDic << word << "\t";
@@ -151,6 +153,8 @@ void DictionaryCreator::create()
     }
 
     outDic << "silence" << "\t" << "sil" << endl;
+
+    dictFile.close();
 }
 
 void DictionaryCreator::run()

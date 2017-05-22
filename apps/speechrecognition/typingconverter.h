@@ -4,10 +4,11 @@
 #include <QObject>
 #include <QMainWindow>
 
-namespace Ui
-{
+namespace Ui {
 class TypingConverter;
 }
+
+namespace VietnameseSpeechRecognition {
 
 class TypingConverter : public QMainWindow
 {
@@ -35,5 +36,7 @@ private slots:
 private:
     Ui::TypingConverter *ui;
 };
+
+}
 
 #endif // TYPINGCONVERTER_H

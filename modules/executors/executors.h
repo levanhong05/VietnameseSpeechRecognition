@@ -42,7 +42,14 @@ private:
 public slots:
     void abort();
 
-    void execWordNet(QString grammar, QString wordnet);
+    void execWordNet(QString grammar = "text/grammar.txt", QString wordnet = "text/wdnet.txt");
+
+    void execMonophones(QString prompts = "text/prompts.txt", QString wlist = "text/wlist",
+                        QString monophones = "phones/monophones",
+                        QString dstDict = "text/dict", QString srcDict = "text/dict.dct");
+
+private slots:
+    void onErrorLogging(QString);
 
 private:
     QList<ExecutingJob *> _jobs;

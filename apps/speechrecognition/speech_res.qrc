@@ -7,5 +7,6 @@
         <file>images/system-shutdown.svg</file>
         <file>images/eraser.png</file>
         <file>images/info.png</file>
+        <file>animation/loader.gif</file>
     </qresource>
 </RCC>

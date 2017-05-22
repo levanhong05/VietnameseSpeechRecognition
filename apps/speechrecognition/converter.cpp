@@ -1,5 +1,7 @@
 #include "converter.h"
 
+using namespace VietnameseSpeechRecognition;
+
 Converter::Converter()
 {
     _unicodeText = QStringList() << "ấ" << "ầ" << "ẩ" << "ẫ" << "ậ" << "â" << "á" << "à" << "ả" << "ã" << "ạ" << "ắ" << "ằ" <<
