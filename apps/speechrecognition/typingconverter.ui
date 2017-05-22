@@ -18,7 +18,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="speech_res.qrc">
-    <normaloff>:/images/shuffle.png</normaloff>:/images/shuffle.png</iconset>
+    <normaloff>:/speech/images/shuffle.png</normaloff>:/speech/images/shuffle.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">

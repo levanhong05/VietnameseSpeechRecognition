@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/executors">
+        <file>images/info.png</file>
+        <file>animation/loader.gif</file>
+    </qresource>
+</RCC>

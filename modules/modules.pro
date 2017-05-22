@@ -4,4 +4,7 @@ CONFIG += ordered
 
 SUBDIRS += \
     logger \
-    console
+    console \
+    workspace \
+    executor \
+    executors

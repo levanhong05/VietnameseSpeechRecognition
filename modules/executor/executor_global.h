@@ -1,0 +1,12 @@
+#ifndef EXECUTOR_GLOBAL_H
+#define EXECUTOR_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(EXECUTOR_LIBRARY)
+#  define EXECUTORSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define EXECUTORSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // EXECUTOR_GLOBAL_H

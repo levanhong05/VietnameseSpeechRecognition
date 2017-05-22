@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/speech">
         <file>images/chat.png</file>
         <file>images/shuffle.png</file>
         <file>images/cover_image.png</file>

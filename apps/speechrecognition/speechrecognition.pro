@@ -29,18 +29,18 @@ SOURCES +=  main.cpp\
             speechrecognition.cpp \
             converter.cpp \
             typingconverter.cpp \
-    dictionarycreator.cpp \
-    aboutscreen.cpp
+            dictionarycreator.cpp \
+            aboutscreen.cpp
 
 HEADERS  += speechrecognition.h \
             converter.h \
             typingconverter.h \
-    dictionarycreator.h \
-    aboutscreen.h
+            dictionarycreator.h \
+            aboutscreen.h
 
 FORMS    += speechrecognition.ui \
             typingconverter.ui \
-    aboutscreen.ui
+            aboutscreen.ui
 
 win32:LIBS += -L$$OUT_PWD/../../dist/bin/ -llogger
 unix:LIBS += -L$$OUT_PWD/../../modules/logger/ -llogger
@@ -62,13 +62,15 @@ RESOURCES += \
 win32 {
     SOURCEPATH1 = $$PWD/config
     SOURCEPATH2 = $$PWD/perl
+    SOURCEPATH3 = $$PWD/HTK
     DESTPATH1 = $$OUT_PWD/../../dist/bin/config
     DESTPATH2 = $$OUT_PWD/../../dist/bin/perl
-    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\)"
+    DESTPATH3 = $$OUT_PWD/../../dist/bin/HTK
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH3,/,\\) $$replace(DESTPATH3,/,\\)"
 }
 
 unix {
-    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/../bin/"
+    copydata.commands = "$(COPY_DIR) $$PWD/config $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/perl $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/HTK $$OUT_PWD/../bin/"
 }
 
 first.depends = $(first) copydata

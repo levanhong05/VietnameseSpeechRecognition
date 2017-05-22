@@ -33,7 +33,7 @@ CONFIG(release, debug|release){
     QMAKE_CLEAN += msvc12/log4cpp/x64/Debug/log4cpp.dll
 }
     QMAKE_EXTRA_TARGETS += first liblog4cpp
-    TARGET = first liblog4cpp
+    TARGET = liblog4cpp
 }
 
 OTHER_FILES += \

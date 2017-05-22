@@ -11,7 +11,7 @@ win32 {
     first.depends = htk
 
     QMAKE_EXTRA_TARGETS += first htk
-    TARGET = first htk
+    TARGET = htk
 }
 
 OTHER_FILES += \
