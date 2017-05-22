@@ -280,7 +280,7 @@
              </font>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;body&gt;&lt;a href=&quot;https://github.com/levanhong05/VietnameseSpeechRecognition&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu'; text-decoration: none; color:#04aade;&quot;&gt;Vietnamese Speech Recognition&lt;/span&gt;&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/levanhong05/VietnameseSpeechRecognition&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu'; text-decoration: underline; color:#04aade;&quot;&gt;Vietnamese Speech Recognition Project on Github&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>

@@ -31,6 +31,11 @@ SpeechRecognition::~SpeechRecognition()
     delete ui;
 }
 
+QMenu *SpeechRecognition::addMenu(const QString &title)
+{
+    return ui->menuBar->addMenu(title);
+}
+
 void SpeechRecognition::onCreateDictionaryFinished()
 {
     QMessageBox::information(this, tr("Create Dictionary"), tr("Create dictionary successfully."));
@@ -76,4 +81,9 @@ void SpeechRecognition::on_btnCreateDictionary_clicked()
 
         creator->execute(path);
     }
+}
+
+void SpeechRecognition::on_actionQuit_triggered()
+{
+    QApplication::quit();
 }

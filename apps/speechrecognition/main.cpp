@@ -1,4 +1,4 @@
-#include "speechrecognition.h"
+#include "application.h"
 
 #include <QApplication>
 
@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-      QApplication a(argc, argv);
-      SpeechRecognition w;
-      w.show();
+      Application app(argc, argv);
 
-      return a.exec();
+      app.showMainWindow();
+
+      return app.exec();
 }

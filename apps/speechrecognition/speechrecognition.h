@@ -17,6 +17,8 @@ public:
 public slots:
     void onCreateDictionaryFinished();
 
+    QMenu *addMenu(const QString &title);
+
 private slots:
     void on_actionConvert_Typing_triggered();
 
@@ -26,8 +28,11 @@ private slots:
 
     void on_btnCreateDictionary_clicked();
 
+    void on_actionQuit_triggered();
+
 private:
-  Ui::SpeechRecognition *ui;
+    Ui::SpeechRecognition *ui;
+
 };
 
 #endif // SPEECHRECOGNITION_H
