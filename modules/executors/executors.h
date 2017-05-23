@@ -6,8 +6,6 @@
 #include <QDockWidget>
 #include <QDirIterator>
 
-#include <iostream>
-
 #include "executors_global.h"
 
 #include "executors.h"
@@ -40,13 +38,17 @@ private:
     bool removeDir(QString dirName);
 
 public slots:
-    void abort();
-
     void execWordNet(QString grammar = "text/grammar.txt", QString wordnet = "text/wdnet.txt");
 
     void execMonophones(QString prompts = "text/prompts.txt", QString wlist = "text/wlist",
-                        QString monophones = "phones/monophones",
-                        QString dstDict = "text/dict", QString srcDict = "text/dict.dct");
+                        QString mphones = "phones/monophones",
+                        QString dstDict = "text/dict", QString srcDict = "text/dict.dct",
+                        QString mphones0 = "phones/monophones0", QString mphones1 = "phones/monophones1");
+
+    void execTranscription(QString prompts = "text/prompts.txt", QString mlfwords = "mlf/words.mlf",
+                           QString dict = "text/dict.dct",
+                           QString mlfphone0 = "mlf/phones0.mlf", QString mkphones0 = "instruction/mkphones0.led",
+                           QString mlfphone1 = "mlf/phones1.mlf", QString mkphones1 = "instruction/mkphones1.led");
 
 private slots:
     void onErrorLogging(QString);

@@ -66,7 +66,7 @@ void SpeechRecognition::on_btnPromtBrowse_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this, tr("Open Promts Data"), QString(QApplication::applicationDirPath()), tr("Text File (*.txt)"));
 
-    if (filePath == "") {
+    if (filePath.isEmpty()) {
         return;
     }
 
@@ -81,7 +81,7 @@ void SpeechRecognition::on_btnCreateDictionary_clicked()
 {
     QString path = ui->txtPromtPath->text();
 
-    if (path != "") {
+    if (!path.isEmpty()) {
         DictionaryCreator *creator = new DictionaryCreator();
 
         WaitingDialog *wait = new WaitingDialog(tr("Create Dictionary..."));
@@ -105,9 +105,18 @@ void SpeechRecognition::preparingData()
 
     if (data.exists()) {
         copyPath(QApplication::applicationDirPath() + "/text", WorkCase::currentCase()->getWorkspace() + "/text");
+    } else {
+        data.mkpath(WorkCase::currentCase()->getWorkspace() + "/text");
     }
 
-    data.mkpath(WorkCase::currentCase()->getWorkspace() + "/instruction");
+    QDir data1(QApplication::applicationDirPath() + "/instruction");
+
+    if (data1.exists()) {
+        copyPath(QApplication::applicationDirPath() + "/instruction", WorkCase::currentCase()->getWorkspace() + "/instruction");
+    } else {
+        data1.mkpath(WorkCase::currentCase()->getWorkspace() + "/instruction");
+    }
+
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/mlf");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/phones");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/wave");
@@ -150,4 +159,23 @@ void SpeechRecognition::on_btnCreateMonophone_clicked()
     Recognitor *recognitor = new Recognitor();
 
     recognitor->executeMonophones();
+}
+
+void SpeechRecognition::on_btnCreateTranscription_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeTranscription();
+}
+
+void SpeechRecognition::on_btnWaveBrowse_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Wave Directory"),
+                                                 QString(QApplication::applicationDirPath()),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+
+    if (!dir.isEmpty()) {
+        ui->txtWavePath->setText(dir);
+    }
 }

@@ -89,15 +89,17 @@ win32 {
     SOURCEPATH2 = $$PWD/perl
     SOURCEPATH3 = $$PWD/HTK
     SOURCEPATH4 = $$PWD/text
+    SOURCEPATH5 = $$PWD/instruction
     DESTPATH1 = $$OUT_PWD/../../dist/bin/config
     DESTPATH2 = $$OUT_PWD/../../dist/bin/perl
     DESTPATH3 = $$OUT_PWD/../../dist/bin/HTK
     DESTPATH4 = $$OUT_PWD/../../dist/bin/text
-    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH3,/,\\) $$replace(DESTPATH3,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH4,/,\\) $$replace(DESTPATH4,/,\\)"
+    DESTPATH5 = $$OUT_PWD/../../dist/bin/instruction
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH3,/,\\) $$replace(DESTPATH3,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH4,/,\\) $$replace(DESTPATH4,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH5,/,\\) $$replace(DESTPATH5,/,\\)"
 }
 
 unix {
-    copydata.commands = "$(COPY_DIR) $$PWD/config $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/perl $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/HTK $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/text $$OUT_PWD/../bin/"
+    copydata.commands = "$(COPY_DIR) $$PWD/config $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/perl $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/HTK $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/text $$OUT_PWD/../bin/ && $(COPY_DIR) $$PWD/instruction $$OUT_PWD/../bin/"
 }
 
 first.depends = $(first) copydata

@@ -3,7 +3,6 @@
 #include <QLayout>
 #include <QVariant>
 #include <QHBoxLayout>
-#include <QInputDialog>
 #include <QApplication>
 
 #include <QDebug>
@@ -13,30 +12,46 @@
 
 using namespace VietnameseSpeechRecognition;
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-QString Executors::shortPathName(const QString &file) // returns 8.3 file format from long path
+ExecutingJob ::ExecutingJob(QString title, QWidget *parent) :
+    title(title)
 {
-    wchar_t *input = new wchar_t[file.size() + 1];
-    file.toWCharArray(input);
-    input[file.size()] = L'\0'; // terminate string
+    this->dock = new QDockWidget(title, parent);
+    this->logWidget = new RunLogWidget(0, this->dock);
+    this->exec = new Executor(WorkCase::currentCase()->getWorkspace());
 
-    long length = GetShortPathName(input, NULL, 0);
-    wchar_t *output = new wchar_t[length];
-
-    GetShortPathName(input, output, length);
-    QString ret = QString::fromWCharArray(output, length - 1); // discard
-
-    delete [] input;
-    delete [] output;
-    return ret;
+    this->dock->setWidget(this->logWidget);
+    this->logWidget->logView()->setModel(this->exec->logModel());
+    this->exec->setLogWidget(this->logWidget->logView());
 }
-#else
-QString Executors::shortPathName(const QString &file)
+
+void Executors::onErrorLogging(QString log)
 {
-    return file;
+    console.logError(log);
 }
-#endif
+
+bool Executors::removeDir(QString dirName)
+{
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists(dirName)) {
+        Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            } else if (info.isFile()) {
+                result = QFile::remove(info.absoluteFilePath());
+            }
+
+            if (!result) {
+                return result;
+            }
+        }
+
+        result = dir.rmdir(dirName);
+    }
+
+    return result;
+}
 
 void Executors::execWordNet(QString grammar, QString wordnet)
 {
@@ -69,9 +84,6 @@ void Executors::execWordNet(QString grammar, QString wordnet)
 #endif
     job->exec->waitForFinished();
 
-    //job->exec->execute("HParse " + shortPathName(WorkCase::currentCase()->getWorkspace() + "/" + grammar) +
-    //                   " " + shortPathName(WorkCase::currentCase()->getWorkspace() + "/" + wordnet));
-
     job->exec->execute("HParse " + WorkCase::currentCase()->getWorkspace() + "/" + grammar +
                        " " + WorkCase::currentCase()->getWorkspace() + "/" + wordnet);
 
@@ -84,7 +96,10 @@ void Executors::execWordNet(QString grammar, QString wordnet)
     }
 }
 
-void Executors::execMonophones(QString prompts, QString wlist, QString monophones, QString dstDict, QString srcDict)
+void Executors::execMonophones(QString prompts, QString wlist,
+                               QString mphones,
+                               QString dstDict, QString srcDict,
+                               QString mphones0, QString mphones1)
 {
     ExecutingJob *job = new ExecutingJob(tr("Monophones"));
     this->_jobs.append(job);
@@ -115,12 +130,6 @@ void Executors::execMonophones(QString prompts, QString wlist, QString monophone
 #endif
     job->exec->waitForFinished();
 
-    QString cmd = "perl " + QApplication::applicationDirPath() + "/perl/prompts2wlist.pl " +
-                  WorkCase::currentCase()->getWorkspace() + "/" + prompts + " " +
-                  WorkCase::currentCase()->getWorkspace() + "/" + wlist;
-
-    qDebug() << cmd;
-
     job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/prompts2wlist.pl " +
                        WorkCase::currentCase()->getWorkspace() + "/" + prompts + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + wlist);
@@ -129,16 +138,16 @@ void Executors::execMonophones(QString prompts, QString wlist, QString monophone
 
     job->exec->execute("HDMan -m -w " +
                        WorkCase::currentCase()->getWorkspace() + "/" + wlist + " -n " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + monophones + " -l dlog " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mphones + " -l dlog " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dstDict + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + srcDict);
 
     job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "perl/mkMonophones.pl " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + monophones + " " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones1");
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkMonophones.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mphones + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mphones0 + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mphones1);
 
     job->exec->waitForFinished();
 
@@ -149,48 +158,64 @@ void Executors::execMonophones(QString prompts, QString wlist, QString monophone
     }
 }
 
-void Executors::onErrorLogging(QString log)
+void Executors::execTranscription(QString prompts, QString mlfwords, QString dict,
+                                  QString mlfphone0, QString mkphones0,
+                                  QString mlfphone1, QString mkphones1)
 {
-    console.logError(log);
-}
+    ExecutingJob *job = new ExecutingJob(tr("Transcription"));
+    this->_jobs.append(job);
 
-void Executors::abort()
-{
-    _isAbort = true;
-}
+    job->exec->setName("createTranscription");
 
-bool Executors::removeDir(QString dirName)
-{
-    bool result = true;
-    QDir dir(dirName);
+    WaitingDialog *wait = new WaitingDialog(tr("Create Transcription..."));
+    wait->setUsingPerCent(true);
 
-    if (dir.exists(dirName)) {
-        Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
-            if (info.isDir()) {
-                result = removeDir(info.absoluteFilePath());
-            } else if (info.isFile()) {
-                result = QFile::remove(info.absoluteFilePath());
-            }
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
 
-            if (!result) {
-                return result;
-            }
-        }
+    connect(job->exec, SIGNAL(finished(int)), wait, SLOT(close()));
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
 
-        result = dir.rmdir(dirName);
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/prompts2mlf.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mlfwords + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + prompts);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HLEd -l * -d " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mlfphone0 + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mkphones0 + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mlfwords);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HLEd -l * -d " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mlfphone1 + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mkphones1 + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mlfwords);
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create transcription."));
+    } else {
+        console.logSuccess(tr("Create transcription successfull."));
     }
-
-    return result;
-}
-
-ExecutingJob ::ExecutingJob(QString title, QWidget *parent) :
-    title(title)
-{
-    this->dock = new QDockWidget(title, parent);
-    this->logWidget = new RunLogWidget(0, this->dock);
-    this->exec = new Executor(WorkCase::currentCase()->getWorkspace());
-
-    this->dock->setWidget(this->logWidget);
-    this->logWidget->logView()->setModel(this->exec->logModel());
-    this->exec->setLogWidget(this->logWidget->logView());
 }

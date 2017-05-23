@@ -13,9 +13,13 @@ class Recognitor : public QObject
 public:
     explicit Recognitor(QObject *parent = 0);
 
+    void execute();
+
     void executeWordNet();
 
     void executeMonophones();
+
+    void executeTranscription();
 
 };
 

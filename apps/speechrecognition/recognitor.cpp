@@ -7,16 +7,34 @@ Recognitor::Recognitor(QObject *parent) :
 {
 }
 
+void Recognitor::execute()
+{
+    Executors *executors = new Executors();
+
+    executors->execWordNet();
+
+    executors->execMonophones();
+
+    executors->execTranscription();
+}
+
 void Recognitor::executeWordNet()
 {
     Executors *executors = new Executors();
 
-    executors->execWordNet("text/grammar.txt", "text/wdnet.txt");
+    executors->execWordNet();
 }
 
 void Recognitor::executeMonophones()
 {
     Executors *executors = new Executors();
 
-    executors->execMonophones("text/prompts.txt", "text/wlist", "phones/monophones", "text/dict", "text/dict.dct");
+    executors->execMonophones();
+}
+
+void Recognitor::executeTranscription()
+{
+    Executors *executors = new Executors();
+
+    executors->execTranscription();
 }

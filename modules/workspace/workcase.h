@@ -1,20 +1,9 @@
 #ifndef FOAMCASE_H
 #define FOAMCASE_H
 
-#include <QChar>
-#include <QFile>
-#include <QHash>
-#include <QList>
 #include <QObject>
-#include <QRegExp>
-#include <QTextStream>
 
-#include <QDir>
-#include <QDirIterator>
 #include <QTemporaryDir>
-
-#include <QTimer>
-#include <QThread>
 
 #include "workspace_global.h"
 

@@ -12,9 +12,9 @@ if (@ARGV != 3) {
 # read in command line arguments
 ($mphones,$mphones0,$mphones1) = @ARGV;
 
-open (MPHONES,"$mphones") || die ("Unable to open $monophones file for reading");
-open (MPHONES0,">$mphones0") || die ("Unable to open $monophones0 file for writing");
-open (MPHONES1,">$mphones1") || die ("Unable to open $monophones1 file for writing");
+open (MPHONES,"$mphones") || die ("Unable to open $mphones file for reading");
+open (MPHONES0,">$mphones0") || die ("Unable to open $mphones0 file for writing");
+open (MPHONES1,">$mphones1") || die ("Unable to open $mphones1 file for writing");
 
 
 #write to the file

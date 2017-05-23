@@ -1,19 +1,10 @@
 #include "workcase.h"
 #include "console.h"
 
-#include <QHash>
-#include <QThread>
 #include <QObject>
-#include <QSettings>
-#include <QFileDialog>
-#include <QMessageBox>
 #include <QApplication>
 
-#include <QDebug>
-
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
+#include <QStandardPaths>
 
 using namespace VietnameseSpeechRecognition;
 
@@ -36,7 +27,10 @@ WorkCase::WorkCase()
           WorkCase::_initialized = true;
     }
 
-    this->_workspace = this->_tempDir.path();
+    //this->_workspace = _tempDir.path();
+    this->_workspace = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "SpeechRecognition";
+
+    console.logInfo(tr("Workspace %1").arg(_workspace));
 }
 
 WorkCase::~WorkCase()
@@ -49,8 +43,11 @@ void WorkCase::open(QString path)
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     this->cmdClean(QStringList());
-    QTemporaryDir* tmpDir = new QTemporaryDir();
-    this->_workspace = tmpDir->path();
+
+    //QTemporaryDir* tmpDir = new QTemporaryDir();
+    //this->_workspace = tmpDir->path();
+
+    this->_workspace = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "SpeechRecognition";
 
     path = _path;
     path = path.replace("\\", "/");

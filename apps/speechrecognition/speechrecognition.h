@@ -36,6 +36,10 @@ private slots:
 
     void on_btnCreateMonophone_clicked();
 
+    void on_btnCreateTranscription_clicked();
+
+    void on_btnWaveBrowse_clicked();
+
 private:
     void preparingData();
 
