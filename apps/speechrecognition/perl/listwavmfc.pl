@@ -1,4 +1,4 @@
-#copyright by Vo Dinh Phong, 27/11/2006
+#copyright by Eric Lee, 23/05/2017
 my ($dir,$fname);
 
 # check usage
@@ -21,11 +21,10 @@ opendir(DIR, $dir);
 closedir(DIR);
 
 use Cwd;
-$dire = getcwd;
 
 foreach $file (@files) {
 	$filename = substr($file,0,length($file) - 3);
-	printf(FNAME "%s/%s/%s %s/%s/%smfc\n", $dire, $dir, $file, $dire, $dir, $filename);
+	printf(FNAME "%s/%s %s/%smfc\n", $dir, $file, $dir, $filename);
 }
 
 close(FNAME);

@@ -1,4 +1,4 @@
-#copyright by Vo Dinh Phong, 27/11/2006
+#copyright by Eric Lee, 25/03/2017
 my ($dir,$fname);
 
 # check usage
@@ -24,7 +24,7 @@ $dire = getcwd;
 
 
 foreach $file (@files) {
-	printf(FNAME "%s/%s/%s\n",$dire,$dir,$file);
+	printf(FNAME "%s/%s\n",$dir,$file);
 }
 
 close(FNAME);

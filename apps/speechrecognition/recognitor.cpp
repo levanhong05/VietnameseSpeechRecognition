@@ -38,3 +38,17 @@ void Recognitor::executeTranscription()
 
     executors->execTranscription();
 }
+
+void Recognitor::executeMFCC(QString path)
+{
+    Executors *executors = new Executors();
+
+    executors->execMFCC(path);
+}
+
+void Recognitor::executeProto()
+{
+    Executors *executors = new Executors();
+
+    executors->execProto();
+}

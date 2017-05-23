@@ -179,3 +179,21 @@ void SpeechRecognition::on_btnWaveBrowse_clicked()
         ui->txtWavePath->setText(dir);
     }
 }
+
+void SpeechRecognition::on_btnCreateMFCC_clicked()
+{
+    QString path = ui->txtWavePath->text();
+
+    if (!path.isEmpty()) {
+        Recognitor *recognitor = new Recognitor();
+
+        recognitor->executeMFCC(path);
+    }
+}
+
+void SpeechRecognition::on_btnCreateProto_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeProto();
+}

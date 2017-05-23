@@ -21,6 +21,10 @@ public:
 
     void executeTranscription();
 
+    void executeMFCC(QString path);
+
+    void executeProto();
+
 };
 
 }

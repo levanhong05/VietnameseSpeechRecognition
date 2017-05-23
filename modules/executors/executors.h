@@ -32,11 +32,6 @@ typedef struct ExecutingJob{
 class EXECUTORSSHARED_EXPORT Executors : public QObject
 {
     Q_OBJECT
-private:
-    QString shortPathName(const QString &file);
-
-    bool removeDir(QString dirName);
-
 public slots:
     void execWordNet(QString grammar = "text/grammar.txt", QString wordnet = "text/wdnet.txt");
 
@@ -50,15 +45,26 @@ public slots:
                            QString mlfphone0 = "mlf/phones0.mlf", QString mkphones0 = "instruction/mkphones0.led",
                            QString mlfphone1 = "mlf/phones1.mlf", QString mkphones1 = "instruction/mkphones1.led");
 
+    void execMFCC(QString path, QString hcopyCFG = "config/HCopy.cfg");
+
+    void execProto(QString wave = "wave", QString train = "text/train.scp",
+                   QString hcomvCFG = "config/HCompV.cfg");
+
 private slots:
     void onErrorLogging(QString);
+
+private:
+    QString shortPathName(const QString &file);
+
+    bool removeDir(QString dirName);
+
+    void scanDir(QString dirName);
 
 private:
     QList<ExecutingJob *> _jobs;
 
     WaitingDialog *_wait;
     bool _isAbort;
-
 };
 
 }

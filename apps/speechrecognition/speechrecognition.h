@@ -40,6 +40,10 @@ private slots:
 
     void on_btnWaveBrowse_clicked();
 
+    void on_btnCreateMFCC_clicked();
+
+    void on_btnCreateProto_clicked();
+
 private:
     void preparingData();
 
