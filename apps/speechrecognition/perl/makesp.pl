@@ -1,16 +1,20 @@
 #!/usr/bin/perl -w
 
+my ($hmmdefs1, $macros1, $hmmdefs2, $macros2, $streaminfo, $vecsize);
+
 # check usage
 if (@ARGV != 4) {
   print "usage: $0 sourceHmmdef destHmmdef sourceMacros destMacros\n";
   exit(0);
 }
 
+# read in command line arguments
+($hmmdefs1, $hmmdefs2, $macros1, $macros2) = @ARGV;
 
 use File::Copy;
 
-copy("@ARGV[0]","@ARGV[1]");
-copy("@ARGV[2]","@ARGV[3]");
+copy("$hmmdefs1","$hmmdefs2");
+copy("$macros1","$macros2");
 
  $okprint = "FALSE";
  $silprint = "FALSE";
@@ -18,8 +22,8 @@ copy("@ARGV[2]","@ARGV[3]");
 #string variable for storing sp model
 $sp = "";
 
- unless (open(FILE, "@ARGV[1]")) {
-   die ("can't open @ARGV[1]");
+ unless (open(FILE, "$hmmdefs2")) {
+   die ("can't open $hmmdefs2");
  }
  
  
@@ -76,8 +80,8 @@ $sp = "";
 
 close(FILE);
 
-unless (open(FILE, ">>@ARGV[1]")) {
-  die ("can't open @ARGV[1]");
+unless (open(FILE, ">>$hmmdefs2")) {
+  die ("can't open $hmmdefs2");
 }
 
 print FILE "$sp";

@@ -1,6 +1,7 @@
 #ifndef SPEECHRECOGNITION_H
 #define SPEECHRECOGNITION_H
 
+#include <QShowEvent>
 #include <QMainWindow>
 
 namespace Ui {
@@ -44,10 +45,22 @@ private slots:
 
     void on_btnCreateProto_clicked();
 
+    void on_btnHRest_clicked();
+
+    void on_btnFixingSilence_clicked();
+
+    void on_btnOptimizeData_clicked();
+
+    void on_btnCreateTriphones_clicked();
+
+    void on_btnTiedTriphones_clicked();
+
 private:
     void preparingData();
 
     void copyPath(QString src, QString dst);
+
+    void showEvent(QShowEvent *);
 
 private:
     Ui::SpeechRecognition *ui;

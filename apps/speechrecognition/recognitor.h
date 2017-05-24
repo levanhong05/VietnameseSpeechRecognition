@@ -13,7 +13,7 @@ class Recognitor : public QObject
 public:
     explicit Recognitor(QObject *parent = 0);
 
-    void execute();
+    void execute(QString path);
 
     void executeWordNet();
 
@@ -24,6 +24,16 @@ public:
     void executeMFCC(QString path);
 
     void executeProto();
+
+    void executeHRest();
+
+    void executeHHEd();
+
+    void executeHVite();
+
+    void executeTriphones();
+
+    void executeTiedTriphones();
 
 };
 

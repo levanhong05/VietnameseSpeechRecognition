@@ -50,6 +50,19 @@ public slots:
     void execProto(QString wave = "wave", QString train = "text/train.scp",
                    QString hcomvCFG = "config/HCompV.cfg");
 
+    void execHRest(QString train = "text/train.scp", QString hrestCFG = "config/HERest.cfg");
+
+    void execHHEd(QString monophones1 = "phones/monophones1", QString silinstr = "instruction/sil.hed",
+                  QString train = "text/train.scp", QString hrestCFG = "config/HERest.cfg");
+
+    void execHVite(QString monophones1 = "phones/monophones1", QString dict = "text/dict.dct",
+                  QString train = "text/train.scp", QString hrestCFG = "config/HERest.cfg");
+
+    void execTriphones(QString train = "text/train.scp", QString triphones1 = "phones/triphones1");
+
+    void execTiedTriphones(QString wintri = "mlf/wintri.mlf", QString train = "text/train.scp",
+                           QString triphones1 = "phones/triphones1");
+
 private slots:
     void onErrorLogging(QString);
 

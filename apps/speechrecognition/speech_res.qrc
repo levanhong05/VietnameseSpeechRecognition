@@ -8,5 +8,7 @@
         <file>images/eraser.png</file>
         <file>images/info.png</file>
         <file>animation/loader.gif</file>
+        <file>images/test.png</file>
+        <file>images/train.png</file>
     </qresource>
 </RCC>

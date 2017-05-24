@@ -391,11 +391,24 @@ void Executors::execProto(QString wave, QString train, QString hcomvCFG)
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HCompV –C " +
-                       QApplication::applicationDirPath() + "/" + hcomvCFG + " –f 0.01 –m –S " +
+    job->exec->execute("HCompV -C " +
+                       QApplication::applicationDirPath() + "/" + hcomvCFG + " -f 0.01 -m -S " +
                        WorkCase::currentCase()->getWorkspace() + "/" + train + " -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm0 " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm0/proto");
+                       WorkCase::currentCase()->getWorkspace() + "/hmm/proto");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkMacrosFile.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm0/vFloors" + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm0/macros");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkHmmdefsFile.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm0/proto" + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0" + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm0/hmmdefs");
 
     job->exec->waitForFinished();
 
@@ -403,6 +416,338 @@ void Executors::execProto(QString wave, QString train, QString hcomvCFG)
         console.logError(tr("Errors occurred while create proto."));
     } else {
         console.logSuccess(tr("Create proto successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execHRest(QString train, QString hrestCFG)
+{
+    ExecutingJob *job = new ExecutingJob(tr("HRest"));
+    this->_jobs.append(job);
+
+    job->exec->setName("runHRest");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Run HRest..."));
+    wait->setUsingPerCent(true);
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    for (int i = 1; i < 4; i++) {
+        job->exec->execute("HERest -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/phones0.mlf" + " -t 250.0 150.0 1000.0 -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0");
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create HRest."));
+    } else {
+        console.logSuccess(tr("Create HRest successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execHHEd(QString monophones1, QString silinstr, QString train, QString hrestCFG)
+{
+    ExecutingJob *job = new ExecutingJob(tr("HHEd"));
+    this->_jobs.append(job);
+
+    job->exec->setName("runHHEd");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Run HHEd..."));
+    wait->setUsingPerCent(true);
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/makesp.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm3/hmmdefs" + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm4/hmmdefs" + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm3/macros" + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm4/macros");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HHEd -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm4/macros" + " -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm4/hmmdefs" + " -M " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm5 " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + silinstr + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + monophones1);
+
+    job->exec->waitForFinished();
+
+    for (int i = 6; i <= 7; i++) {
+        job->exec->execute("HERest -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/phones0.mlf" + " -t 250.0 150.0 1000.0 -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0");
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create HHEd."));
+    } else {
+        console.logSuccess(tr("Create HHEd successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execHVite(QString monophones1, QString dict, QString train, QString hrestCFG)
+{
+    ExecutingJob *job = new ExecutingJob(tr("HVite"));
+    this->_jobs.append(job);
+
+    job->exec->setName("runHVite");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Run HVite..."));
+    wait->setUsingPerCent(true);
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HVite -l * -o SWT -b silence -a -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm7/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm7/hmmdefs -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf -m -t 250.0 -y lab -I " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/words.mlf -S " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + train + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + monophones1);
+
+    job->exec->waitForFinished();
+
+    for (int i = 8; i <= 9; i++) {
+        job->exec->execute("HERest -B -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf -t 250.0 150.0 1000.0 -s stats -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + monophones1);
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create HVite."));
+    } else {
+        console.logSuccess(tr("Create HVite successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execTriphones(QString train, QString triphones1)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Triphones"));
+    this->_jobs.append(job);
+
+    job->exec->setName("createTriphones");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Create Triphones..."));
+    wait->setUsingPerCent(true);
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HLEd -n " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 -l * -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.led " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTriHed.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones1 " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.hed");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HHEd -B -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm9/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm9/hmmdefs -M " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm10 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.hed " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones1");;
+
+    job->exec->waitForFinished();
+
+    for (int i = 11; i <= 12; i++) {
+        job->exec->execute("HERest -B -C " +
+                           QApplication::applicationDirPath() + "/config/HERest.cfg -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf -t 250.0 150.0 1000.0 -s stats -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + triphones1);
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create triphones."));
+    } else {
+        console.logSuccess(tr("Create triphones successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execTiedTriphones(QString wintri, QString train, QString triphones1)
+{
+    ExecutingJob *job = new ExecutingJob(tr("TiedTriphones"));
+    this->_jobs.append(job);
+
+    job->exec->setName("createTiedTriphones");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Create Tied Triphones..."));
+    wait->setUsingPerCent(true);
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HHEd -B -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm12/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm12/hmmdefs -M " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm13 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + triphones1 + " > log");
+
+    job->exec->waitForFinished();
+
+    for (int i = 14; i <= 15; i++) {
+        job->exec->execute("HERest -B -C " +
+                           QApplication::applicationDirPath() + "/config/HERest.cfg -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 1000.0 -s stats -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + triphones1);
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create tied state triphones."));
+    } else {
+        console.logSuccess(tr("Create tied state triphones successfull."));
     }
 
     wait->close();

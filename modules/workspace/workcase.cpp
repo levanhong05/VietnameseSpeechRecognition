@@ -28,7 +28,7 @@ WorkCase::WorkCase()
     }
 
     //this->_workspace = _tempDir.path();
-    this->_workspace = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "SpeechRecognition";
+    this->_workspace = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     console.logInfo(tr("Workspace %1").arg(_workspace));
 }
@@ -47,7 +47,7 @@ void WorkCase::open(QString path)
     //QTemporaryDir* tmpDir = new QTemporaryDir();
     //this->_workspace = tmpDir->path();
 
-    this->_workspace = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + "SpeechRecognition";
+    this->_workspace = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     path = _path;
     path = path.replace("\\", "/");

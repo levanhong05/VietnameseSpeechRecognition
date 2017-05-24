@@ -117,6 +117,14 @@ void SpeechRecognition::preparingData()
         data1.mkpath(WorkCase::currentCase()->getWorkspace() + "/instruction");
     }
 
+    QDir data2(QApplication::applicationDirPath() + "/hmm");
+
+    if (data2.exists()) {
+        copyPath(QApplication::applicationDirPath() + "/hmm", WorkCase::currentCase()->getWorkspace() + "/hmm");
+    } else {
+        data2.mkpath(WorkCase::currentCase()->getWorkspace() + "/hmm");
+    }
+
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/mlf");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/phones");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/wave");
@@ -144,6 +152,21 @@ void SpeechRecognition::copyPath(QString src, QString dst)
 
     foreach (QString f, dir.entryList(QDir::Files)) {
         QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    }
+}
+
+void SpeechRecognition::showEvent(QShowEvent *)
+{
+    QDir workspace(WorkCase::currentCase()->getWorkspace());
+
+    workspace.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+
+    QFileInfoList infos = workspace.entryInfoList();
+
+    foreach (QFileInfo info, infos) {
+        if (info.fileName().startsWith("run")) {
+            QFile::remove(info.absoluteFilePath());
+        }
     }
 }
 
@@ -196,4 +219,39 @@ void SpeechRecognition::on_btnCreateProto_clicked()
     Recognitor *recognitor = new Recognitor();
 
     recognitor->executeProto();
+}
+
+void SpeechRecognition::on_btnHRest_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeHRest();
+}
+
+void SpeechRecognition::on_btnFixingSilence_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeHHEd();
+}
+
+void SpeechRecognition::on_btnOptimizeData_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeHVite();
+}
+
+void SpeechRecognition::on_btnCreateTriphones_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeTriphones();
+}
+
+void SpeechRecognition::on_btnTiedTriphones_clicked()
+{
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->executeTiedTriphones();
 }
