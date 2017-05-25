@@ -65,9 +65,15 @@ void SpeechRecognition::startTrainingData()
         return;
     }
 
-    Recognitor *recognitor = new Recognitor();
+    DictionaryCreator *creator = new DictionaryCreator();
 
-    recognitor->execute(ui->txtWavePath->text());
+    WaitingDialog *wait = new WaitingDialog(tr("Create Dictionary..."));
+
+    connect(creator, SIGNAL(finished()), this, SLOT(onTrainingDictionaryFinished()));
+    connect(creator, SIGNAL(finished()), wait, SLOT(close()));
+
+    wait->show();
+    creator->execute(ui->txtWavePath->text());
 }
 
 void SpeechRecognition::startTestingData()
@@ -81,6 +87,15 @@ void SpeechRecognition::startTestingData()
 void SpeechRecognition::onCreateDictionaryFinished()
 {
     console.logSuccess(tr("Create dictionary successfully."));
+}
+
+void SpeechRecognition::onTrainingDictionaryFinished()
+{
+    console.logSuccess(tr("Create dictionary successfully."));
+
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->execute(ui->txtWavePath->text());
 }
 
 void SpeechRecognition::on_actionConvert_Typing_triggered()

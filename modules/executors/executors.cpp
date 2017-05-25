@@ -451,7 +451,7 @@ void Executors::execHRest(QString train, QString hrestCFG)
 #endif
     job->exec->waitForFinished();
 
-    for (int i = 1; i < 4; i++) {
+    for (int i = 1; i <= 3; i++) {
         job->exec->execute("HERest -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/phones0.mlf" + " -t 250.0 150.0 1000.0 -S " +
@@ -528,7 +528,7 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
-                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0");
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones1");
 
         job->exec->waitForFinished();
     }

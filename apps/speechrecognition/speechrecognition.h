@@ -20,6 +20,8 @@ public:
 public slots:
     void onCreateDictionaryFinished();
 
+    void onTrainingDictionaryFinished();
+
     QMenu *addMenu(const QString &title);
 
 private slots:
