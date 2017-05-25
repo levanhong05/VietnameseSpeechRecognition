@@ -17,7 +17,8 @@ public slots:
     void showMainWindow();
 
 private:
-    SpeechRecognition *mainWindow;
+    SpeechRecognition *_mainWindow;
+
 };
 
 #endif // APPLICATION_H

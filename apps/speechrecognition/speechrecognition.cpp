@@ -1,6 +1,7 @@
 #include "speechrecognition.h"
 #include "ui_speechrecognition.h"
 
+#include <QAction>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QApplication>
@@ -28,9 +29,18 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
 
     console.logInfo(tr("Vietnamese Speech Recognition Program !!!"));
 
-    QWidget::showMaximized();
-
     preparingData();
+
+    QAction *actionTraining = ui->toolBar->addAction(QIcon(":/speech/images/train.png"), tr("Training"));
+    actionTraining->setShortcut(Qt::Key_F5 | Qt::CTRL);
+
+    QAction *actionTesting = ui->toolBar->addAction(QIcon(":/speech/images/test.png"), tr("Testing"));
+    actionTraining->setShortcut(Qt::Key_T | Qt::CTRL);
+
+    connect(actionTraining, SIGNAL(triggered(bool)), this, SLOT(startTrainingData()));
+    connect(actionTesting, SIGNAL(triggered(bool)), this, SLOT(startTestingData()));
+
+    QWidget::showMaximized();
 }
 
 SpeechRecognition::~SpeechRecognition()
@@ -41,6 +51,31 @@ SpeechRecognition::~SpeechRecognition()
 QMenu *SpeechRecognition::addMenu(const QString &title)
 {
     return ui->menuBar->addMenu(title);
+}
+
+void SpeechRecognition::startTrainingData()
+{
+    if (ui->txtPromtPath->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data."), QMessageBox::Ok);
+        return;
+    }
+
+    if (ui->txtWavePath->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data."), QMessageBox::Ok);
+        return;
+    }
+
+    Recognitor *recognitor = new Recognitor();
+
+    recognitor->execute(ui->txtWavePath->text());
+}
+
+void SpeechRecognition::startTestingData()
+{
+    if (ui->txtWaveTest->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select test data."), QMessageBox::Ok);
+        return;
+    }
 }
 
 void SpeechRecognition::onCreateDictionaryFinished()

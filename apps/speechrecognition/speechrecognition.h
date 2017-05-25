@@ -14,8 +14,8 @@ class SpeechRecognition : public QMainWindow
 {
   Q_OBJECT
 public:
-  explicit SpeechRecognition(QWidget *parent = 0);
-  ~SpeechRecognition();
+    explicit SpeechRecognition(QWidget *parent = 0);
+    ~SpeechRecognition();
 
 public slots:
     void onCreateDictionaryFinished();
@@ -23,6 +23,10 @@ public slots:
     QMenu *addMenu(const QString &title);
 
 private slots:
+    void startTrainingData();
+
+    void startTestingData();
+
     void on_actionConvert_Typing_triggered();
 
     void on_actionAbout_triggered();

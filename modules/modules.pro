@@ -6,5 +6,6 @@ SUBDIRS += \
     logger \
     console \
     workspace \
+    casesource \
     executor \
     executors
