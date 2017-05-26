@@ -13,29 +13,18 @@ class WaitingDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit WaitingDialog(QString message, QWidget *parent = 0);
+    explicit WaitingDialog(QString title, QWidget *parent = 0);
     ~WaitingDialog();
 
-    bool flag;
-    void setEnabledButton(bool enable = true);
-    void setUsingPerCent(bool enabled);
-
-public slots:
-    void updatePercent(unsigned int number);
+    void setTitle(QString title);
 
 private slots:
-    void on_btnAbort_clicked();
     void closeEvent(QCloseEvent *event);
-
-signals:
-    void abort();
 
 private:
     Ui::WaitingDialog *ui;
 
     QMovie _movie;
-
-    bool isUsingPercent;
 
 };
 

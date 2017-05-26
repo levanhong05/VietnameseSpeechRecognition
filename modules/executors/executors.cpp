@@ -10,7 +10,9 @@
 #include "executors.h"
 #include "loglistmodel.h"
 
-using namespace VietnameseSpeechRecognition;
+namespace VietnameseSpeechRecognition {
+
+Executors executors;
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -111,7 +113,6 @@ void Executors::execWordNet(QString grammar, QString wordnet)
     job->exec->setName("createWordNet");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create WordNet..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -157,7 +158,6 @@ void Executors::execMonophones(QString prompts, QString wlist,
     job->exec->setName("createMonophones");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create Monophones..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -186,9 +186,9 @@ void Executors::execMonophones(QString prompts, QString wlist,
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HDMan -m -w " +
+    job->exec->execute("HDMan -A -D -T 1 -m -w " +
                        WorkCase::currentCase()->getWorkspace() + "/" + wlist + " -n " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + mphones + " -l dlog " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mphones + " -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dstDict + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + srcDict);
 
@@ -218,7 +218,6 @@ void Executors::execTranscription(QString prompts, QString mlfwords, QString dic
     job->exec->setName("createTranscription");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create Transcription..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -247,7 +246,7 @@ void Executors::execTranscription(QString prompts, QString mlfwords, QString dic
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -l * -d " +
+    job->exec->execute("HLEd -A -D -T 1 -l * -d " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dict + " -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mlfphone0 + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mkphones0 + " " +
@@ -255,7 +254,7 @@ void Executors::execTranscription(QString prompts, QString mlfwords, QString dic
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -l * -d " +
+    job->exec->execute("HLEd -A -D -T 1 -l * -d " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dict + " -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mlfphone1 + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mkphones1 + " " +
@@ -284,7 +283,6 @@ void Executors::execMFCC(QString path, QString hcopyCFG)
     job->exec->setName("createMFCC");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create MFCC..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -315,26 +313,7 @@ void Executors::execMFCC(QString path, QString hcopyCFG)
 
             job->exec->waitForFinished();
 
-//            QDir dir(path);
-
-//            dir.setNameFilters(QStringList("*.wav"));
-//            dir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-
-//            QStringList fileList = dir.entryList();
-
-//            QFile listMFC(path + "/listwavmfc");
-
-//            listMFC.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
-
-//            QTextStream in(&listMFC);
-
-//            for (int i = 0; i < fileList.count(); i++) {
-//                in << path << "/" << fileList[i] << " " << path << "/" << fileList[i].left(fileList[i].length() - 3) << "mfc" << endl;
-//            }
-
-//            listMFC.close();
-
-            job->exec->execute("HCopy -T 1 -C " +
+            job->exec->execute("HCopy -A -D -T 1  -C " +
                                QApplication::applicationDirPath() + "/" + hcopyCFG + " -S " +
                                path + "/listwavmfc");
 
@@ -363,7 +342,6 @@ void Executors::execProto(QString wave, QString train, QString hcomvCFG)
     job->exec->setName("createProto");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create Proto..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -391,7 +369,7 @@ void Executors::execProto(QString wave, QString train, QString hcomvCFG)
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HCompV -C " +
+    job->exec->execute("HCompV -A -D -T 1 -C " +
                        QApplication::applicationDirPath() + "/" + hcomvCFG + " -f 0.01 -m -S " +
                        WorkCase::currentCase()->getWorkspace() + "/" + train + " -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm0 " +
@@ -429,7 +407,6 @@ void Executors::execHRest(QString train, QString hrestCFG)
     job->exec->setName("runHRest");
 
     WaitingDialog *wait = new WaitingDialog(tr("Run HRest..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -452,7 +429,7 @@ void Executors::execHRest(QString train, QString hrestCFG)
     job->exec->waitForFinished();
 
     for (int i = 1; i <= 3; i++) {
-        job->exec->execute("HERest -C " +
+        job->exec->execute("HERest -A -D -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/phones0.mlf" + " -t 250.0 150.0 1000.0 -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -465,9 +442,9 @@ void Executors::execHRest(QString train, QString hrestCFG)
     }
 
     if (job->exec->lastExitCode() != 0) {
-        console.logError(tr("Errors occurred while create HRest."));
+        console.logError(tr("Errors occurred while create HRest training."));
     } else {
-        console.logSuccess(tr("Create HRest successfull."));
+        console.logSuccess(tr("Create HRest training successfull."));
     }
 
     wait->close();
@@ -481,7 +458,6 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
     job->exec->setName("runHHEd");
 
     WaitingDialog *wait = new WaitingDialog(tr("Run HHEd..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -511,7 +487,7 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HHEd -H " +
+    job->exec->execute("HHEd -A -D -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm4/macros" + " -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm4/hmmdefs" + " -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm5 " +
@@ -521,9 +497,9 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
     job->exec->waitForFinished();
 
     for (int i = 6; i <= 7; i++) {
-        job->exec->execute("HERest -C " +
+        job->exec->execute("HERest -A -D -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
-                           WorkCase::currentCase()->getWorkspace() + "/mlf/phones0.mlf" + " -t 250.0 150.0 1000.0 -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/phones1.mlf" + " -t 250.0 150.0 1000.0 -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
@@ -534,15 +510,15 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
     }
 
     if (job->exec->lastExitCode() != 0) {
-        console.logError(tr("Errors occurred while create HHEd."));
+        console.logError(tr("Errors occurred while create fixing silence."));
     } else {
-        console.logSuccess(tr("Create HHEd successfull."));
+        console.logSuccess(tr("Fixing silence successfull."));
     }
 
     wait->close();
 }
 
-void Executors::execHVite(QString monophones1, QString dict, QString train, QString hrestCFG)
+void Executors::execHVite(QString monophones1, QString dict, QString train, QString hrestCFG, QString hviteCFG)
 {
     ExecutingJob *job = new ExecutingJob(tr("HVite"));
     this->_jobs.append(job);
@@ -550,7 +526,6 @@ void Executors::execHVite(QString monophones1, QString dict, QString train, QStr
     job->exec->setName("runHVite");
 
     WaitingDialog *wait = new WaitingDialog(tr("Run HVite..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -572,10 +547,11 @@ void Executors::execHVite(QString monophones1, QString dict, QString train, QStr
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HVite -l * -o SWT -b silence -a -H " +
+    job->exec->execute("HVite -A -D -T 1 -l * -o SWT -b silence -C " +
+                       QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm7/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm7/hmmdefs -i " +
-                       WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf -m -t 250.0 -y lab -I " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf -m -t 250.0 150.0 1000.0 -y lab -a -I " +
                        WorkCase::currentCase()->getWorkspace() + "/mlf/words.mlf -S " +
                        WorkCase::currentCase()->getWorkspace() + "/" + train + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
@@ -583,8 +559,10 @@ void Executors::execHVite(QString monophones1, QString dict, QString train, QStr
 
     job->exec->waitForFinished();
 
+    wait->setTitle(tr("Running HERest..."));
+
     for (int i = 8; i <= 9; i++) {
-        job->exec->execute("HERest -B -C " +
+        job->exec->execute("HERest -A -D -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf -t 250.0 150.0 1000.0 -s stats -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -597,15 +575,15 @@ void Executors::execHVite(QString monophones1, QString dict, QString train, QStr
     }
 
     if (job->exec->lastExitCode() != 0) {
-        console.logError(tr("Errors occurred while create HVite."));
+        console.logError(tr("Errors occurred while create optimize data."));
     } else {
-        console.logSuccess(tr("Create HVite successfull."));
+        console.logSuccess(tr("Optimize data successfull."));
     }
 
     wait->close();
 }
 
-void Executors::execTriphones(QString train, QString triphones1)
+void Executors::execTriphones(QString train, QString triphones1, QString hrestCFG)
 {
     ExecutingJob *job = new ExecutingJob(tr("Triphones"));
     this->_jobs.append(job);
@@ -613,7 +591,6 @@ void Executors::execTriphones(QString train, QString triphones1)
     job->exec->setName("createTriphones");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create Triphones..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -635,7 +612,7 @@ void Executors::execTriphones(QString train, QString triphones1)
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -n " +
+    job->exec->execute("HLEd -A -D -T 1 -n " +
                        WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 -l * -i " +
                        WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf " +
                        WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.led " +
@@ -650,7 +627,7 @@ void Executors::execTriphones(QString train, QString triphones1)
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HHEd -B -H " +
+    job->exec->execute("HHEd -A -D -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm9/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm9/hmmdefs -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm10 " +
@@ -660,9 +637,9 @@ void Executors::execTriphones(QString train, QString triphones1)
     job->exec->waitForFinished();
 
     for (int i = 11; i <= 12; i++) {
-        job->exec->execute("HERest -B -C " +
-                           QApplication::applicationDirPath() + "/config/HERest.cfg -I " +
-                           WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf -t 250.0 150.0 1000.0 -s stats -S " +
+        job->exec->execute("HERest -A -D -T 1 -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf -t 250.0 150.0 3000.0 -s stats -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
@@ -681,7 +658,71 @@ void Executors::execTriphones(QString train, QString triphones1)
     wait->close();
 }
 
-void Executors::execTiedTriphones(QString wintri, QString train, QString triphones1)
+void Executors::execTiedTriphone()
+{
+    ExecutingJob *job = new ExecutingJob(tr("TiedTriphones"));
+    this->_jobs.append(job);
+
+    job->exec->setName("createTiedTriphones");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Preparing Tied Triphones..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HDMan -A -D -T 1 -b sp -n " +
+                       WorkCase::currentCase()->getWorkspace() + "/fulllist -g " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/maketriphones.ded " +
+                       WorkCase::currentCase()->getWorkspace() + "/text/dict-tri " +
+                       WorkCase::currentCase()->getWorkspace() + "/text/dict.dct");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("type " +
+                       QString(WorkCase::currentCase()->getWorkspace() + "/fulllist ").replace("/", "\\") +
+                       QString(WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 > ").replace("/", "\\") +
+                       QString(WorkCase::currentCase()->getWorkspace() + "/fulllist1").replace("/", "\\"));
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " +
+                       QApplication::applicationDirPath() + "/perl/fixfulllist.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/fulllist1 " +
+                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("perl " +
+                       QApplication::applicationDirPath() + "/perl/mkclscript.prl TB 350 " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree2.hed");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("type " +
+                       QString(WorkCase::currentCase()->getWorkspace() + "/instruction/tree1.hed ").replace("/", "\\") +
+                       QString(WorkCase::currentCase()->getWorkspace() + "/instruction/tree2.hed > ").replace("/", "\\") +
+                       QString(WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed").replace("/", "\\"));
+
+    job->exec->waitForFinished();
+
+    wait->close();
+}
+
+void Executors::execTiedTriphones(QString wintri, QString train, QString triphones1, QString hrestCFG)
 {
     ExecutingJob *job = new ExecutingJob(tr("TiedTriphones"));
     this->_jobs.append(job);
@@ -689,7 +730,6 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
     job->exec->setName("createTiedTriphones");
 
     WaitingDialog *wait = new WaitingDialog(tr("Create Tied Triphones..."));
-    wait->setUsingPerCent(true);
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -711,35 +751,36 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0");
+//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
+//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+//                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
 
-    job->exec->waitForFinished();
+//    job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
+//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+//                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
 
-    job->exec->waitForFinished();
+//    job->exec->waitForFinished();
 
-    job->exec->execute("HHEd -B -H " +
+    job->exec->execute("HHEd -A -D -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm12/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm12/hmmdefs -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm13 " +
                        WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + triphones1 + " > log");
+                       WorkCase::currentCase()->getWorkspace() + "/" + triphones1);
 
     job->exec->waitForFinished();
 
     for (int i = 14; i <= 15; i++) {
-        job->exec->execute("HERest -B -C " +
-                           QApplication::applicationDirPath() + "/config/HERest.cfg -I " +
-                           WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 1000.0 -s stats -S " +
+        job->exec->execute("HERest -A -D -T 1 -T 1 -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 3000.0 -s stats -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
                            WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
-                           WorkCase::currentCase()->getWorkspace() + "/" + triphones1);
+                           WorkCase::currentCase()->getWorkspace() + "/tiedlist");
 
         job->exec->waitForFinished();
     }
@@ -751,4 +792,6 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
     }
 
     wait->close();
+}
+
 }

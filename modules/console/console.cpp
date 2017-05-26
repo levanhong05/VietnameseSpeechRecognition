@@ -93,11 +93,6 @@ ConsoleDock *Console::dock()
     return m_dock;
 }
 
-//void Console::registerConsoleCommand(QString cmd, QString handler)
-//{
-//    this->commands[cmd] = handler;
-//}
-
 void Console::clear()
 {
     this->m_logger->clear();
@@ -124,21 +119,6 @@ void Console::dispatchCommand(QString cmdline)
     }
 
     console.logger()->cmd(cmdline);
-    //AppEvents::getInstance().trigger(commands[cmd], this, Q_ARG(QStringList, args));
 }
-
-//void Console::collectConsoleCommands()
-//{
-//    AppEvents::getInstance().bind("registerConsoleCommand", this, new QVariant("registerConsoleCommand"));
-
-//    DOFI2::Plugin::PluginApi::getInstance()->events()->registerEvent("cmd.console.clear");
-//    DOFI2::Plugin::PluginApi::getInstance()->events()->bind("cmd.console.clear", this, new QVariant("clearCmd"));
-
-//    DOFI2::Plugin::PluginApi::getInstance()->events()->bind("onRequestCloseFoamCase", this, new QVariant("onCaseClose"));
-
-//    DOFI2::Plugin::PluginApi::getInstance()->events()->trigger("registerConsoleCommand", this, Q_ARG(QString, "clear"), Q_ARG(QString, "cmd.console.clear"));
-
-//    AppEvents::getInstance().trigger("collectConsoleCommands", this);
-//}
 
 }

@@ -56,12 +56,16 @@ public slots:
                   QString train = "text/train.scp", QString hrestCFG = "config/HERest.cfg");
 
     void execHVite(QString monophones1 = "phones/monophones1", QString dict = "text/dict.dct",
-                  QString train = "text/train.scp", QString hrestCFG = "config/HERest.cfg");
+                  QString train = "text/train.scp",
+                   QString hrestCFG = "config/HERest.cfg", QString hviteCFG = "config/HVite.cfg");
 
-    void execTriphones(QString train = "text/train.scp", QString triphones1 = "phones/triphones1");
+    void execTriphones(QString train = "text/train.scp", QString triphones1 = "phones/triphones1",
+                       QString hrestCFG = "config/HERest.cfg");
 
     void execTiedTriphones(QString wintri = "mlf/wintri.mlf", QString train = "text/train.scp",
-                           QString triphones1 = "phones/triphones1");
+                           QString triphones1 = "phones/triphones1", QString hrestCFG = "config/HERest.cfg");
+
+    void execTiedTriphone();
 
 private slots:
     void onErrorLogging(QString);
@@ -79,6 +83,8 @@ private:
     WaitingDialog *_wait;
     bool _isAbort;
 };
+
+extern Executors EXECUTORSSHARED_EXPORT executors;
 
 }
 

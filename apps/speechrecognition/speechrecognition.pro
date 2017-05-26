@@ -32,8 +32,7 @@ SOURCES +=  main.cpp\
             dictionarycreator.cpp \
             aboutscreen.cpp \
             application.cpp \
-            waitingdialog.cpp \
-            recognitor.cpp
+            waitingdialog.cpp
 
 HEADERS  += speechrecognition.h \
             converter.h \
@@ -41,8 +40,7 @@ HEADERS  += speechrecognition.h \
             dictionarycreator.h \
             aboutscreen.h \
             application.h \
-            waitingdialog.h \
-            recognitor.h
+            waitingdialog.h
 
 FORMS    += speechrecognition.ui \
             typingconverter.ui \

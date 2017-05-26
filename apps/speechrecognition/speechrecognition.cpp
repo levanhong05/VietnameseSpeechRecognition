@@ -8,8 +8,8 @@
 
 #include "console.h"
 #include "workcase.h"
+#include "executors.h"
 
-#include "recognitor.h"
 #include "typingconverter.h"
 #include "dictionarycreator.h"
 
@@ -93,9 +93,27 @@ void SpeechRecognition::onTrainingDictionaryFinished()
 {
     console.logSuccess(tr("Create dictionary successfully."));
 
-    Recognitor *recognitor = new Recognitor();
+    executors.execWordNet();
 
-    recognitor->execute(ui->txtWavePath->text());
+    executors.execMonophones();
+
+    executors.execTranscription();
+
+    executors.execMFCC(ui->txtWavePath->text());
+
+    executors.execProto();
+
+    executors.execHRest();
+
+    executors.execHHEd();
+
+    executors.execHVite();
+
+    executors.execTriphones();
+
+    executors.execTiedTriphone();
+
+    executors.execTiedTriphones();
 }
 
 void SpeechRecognition::on_actionConvert_Typing_triggered()
@@ -122,6 +140,10 @@ void SpeechRecognition::on_btnPromtBrowse_clicked()
 
     if (QFile::exists(filePath)) {
         ui->txtPromtPath->setText(filePath);
+
+        if (QFile::exists(WorkCase::currentCase()->getWorkspace() + "/text/prompts.txt")) {
+            QFile::remove(WorkCase::currentCase()->getWorkspace() + "/text/prompts.txt");
+        }
 
         QFile::copy(filePath, WorkCase::currentCase()->getWorkspace() + "/text/prompts.txt");
     }
@@ -192,16 +214,22 @@ void SpeechRecognition::copyPath(QString src, QString dst)
         return;
     }
 
-    dir.mkpath(dst);
-
-    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        QString dstPath = dst + QDir::separator() + d;
-        dir.mkpath(dstPath);
-        copyPath(src+ QDir::separator() + d, dstPath);
+    if (!dir.exists(dst)) {
+        dir.mkpath(dst);
     }
 
-    foreach (QString f, dir.entryList(QDir::Files)) {
-        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    foreach (QString dirName, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dstPath = dst + QDir::separator() + dirName;
+        dir.mkpath(dstPath);
+        copyPath(src+ QDir::separator() + dirName, dstPath);
+    }
+
+    foreach (QString fileName, dir.entryList(QDir::Files)) {
+        if (QFile::exists(dst + QDir::separator() + fileName)) {
+            QFile::remove(dst + QDir::separator() + fileName);
+        }
+
+        QFile::copy(src + QDir::separator() + fileName, dst + QDir::separator() + fileName);
     }
 }
 
@@ -222,23 +250,17 @@ void SpeechRecognition::showEvent(QShowEvent *)
 
 void SpeechRecognition::on_btnCreateWordNet_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeWordNet();
+    executors.execWordNet();
 }
 
 void SpeechRecognition::on_btnCreateMonophone_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeMonophones();
+    executors.execMonophones();
 }
 
 void SpeechRecognition::on_btnCreateTranscription_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeTranscription();
+    executors.execTranscription();
 }
 
 void SpeechRecognition::on_btnWaveBrowse_clicked()
@@ -258,50 +280,38 @@ void SpeechRecognition::on_btnCreateMFCC_clicked()
     QString path = ui->txtWavePath->text();
 
     if (!path.isEmpty()) {
-        Recognitor *recognitor = new Recognitor();
-
-        recognitor->executeMFCC(path);
+        executors.execMFCC(path);
     }
 }
 
 void SpeechRecognition::on_btnCreateProto_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeProto();
+    executors.execProto();
 }
 
 void SpeechRecognition::on_btnHRest_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeHRest();
+    executors.execHRest();
 }
 
 void SpeechRecognition::on_btnFixingSilence_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeHHEd();
+    executors.execHHEd();
 }
 
 void SpeechRecognition::on_btnOptimizeData_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeHVite();
+    executors.execHVite();
 }
 
 void SpeechRecognition::on_btnCreateTriphones_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
-
-    recognitor->executeTriphones();
+    executors.execTriphones();
 }
 
 void SpeechRecognition::on_btnTiedTriphones_clicked()
 {
-    Recognitor *recognitor = new Recognitor();
+    executors.execTiedTriphone();
 
-    recognitor->executeTiedTriphones();
+    executors.execTiedTriphones();
 }
