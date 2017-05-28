@@ -67,15 +67,24 @@ public slots:
 
     void execTiedTriphone();
 
+    void execTest(QString waveTestPath,
+                  QString hviteCFG = "config/HVite.cfg", QString hcopyCFG = "config/HCopy.cfg",
+                  QString test = "test/test.scp", QString recout = "test/recout.mlf",
+                  QString wordnet = "text/wdnet.txt", QString dict = "text/dict.dct");
+
+    void execShowResult(QString recout = "test/recout.mlf");
+
 private slots:
     void onErrorLogging(QString);
+
+    void onResultLogging(QString result);
 
 private:
     QString shortPathName(const QString &file);
 
     bool removeDir(QString dirName);
 
-    void scanDir(QString dirName);
+    void scanDir(QString dirName, QString dst = "wave");
 
 private:
     QList<ExecutingJob *> _jobs;

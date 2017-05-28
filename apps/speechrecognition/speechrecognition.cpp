@@ -56,12 +56,12 @@ QMenu *SpeechRecognition::addMenu(const QString &title)
 void SpeechRecognition::startTrainingData()
 {
     if (ui->txtPromtPath->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data."), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data for training."), QMessageBox::Ok);
         return;
     }
 
     if (ui->txtWavePath->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data."), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for training."), QMessageBox::Ok);
         return;
     }
 
@@ -78,8 +78,13 @@ void SpeechRecognition::startTrainingData()
 
 void SpeechRecognition::startTestingData()
 {
+    if (ui->txtPromtTest->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data for testing."), QMessageBox::Ok);
+        return;
+    }
+
     if (ui->txtWaveTest->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Missing Data"), tr("Please select test data."), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for testing."), QMessageBox::Ok);
         return;
     }
 }
@@ -314,4 +319,51 @@ void SpeechRecognition::on_btnTiedTriphones_clicked()
     executors.execTiedTriphone();
 
     executors.execTiedTriphones();
+}
+
+void SpeechRecognition::on_groupBoxTrainingStep_toggled(bool toggled)
+{
+    ui->frameTraining->setVisible(toggled);
+}
+
+void SpeechRecognition::on_btnPromtTest_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open Promts Data"), QString(QApplication::applicationDirPath()), tr("Text File (*.txt)"));
+
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    if (QFile::exists(filePath)) {
+        ui->txtPromtTest->setText(filePath);
+    }
+}
+
+void SpeechRecognition::on_btnTest_clicked()
+{
+    if (ui->txtPromtTest->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data for testing."), QMessageBox::Ok);
+        return;
+    }
+
+    if (ui->txtWaveTest->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for testing."), QMessageBox::Ok);
+        return;
+    }
+
+    executors.execTest(ui->txtWaveTest->text());
+
+    executors.execShowResult();
+}
+
+void SpeechRecognition::on_btnWaveTest_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Wave Directory"),
+                                                 QString(QApplication::applicationDirPath()),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+
+    if (!dir.isEmpty()) {
+        ui->txtWaveTest->setText(dir);
+    }
 }

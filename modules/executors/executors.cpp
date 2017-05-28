@@ -56,6 +56,11 @@ void Executors::onErrorLogging(QString log)
     console.logError(log);
 }
 
+void Executors::onResultLogging(QString result)
+{
+    console.logInfo(result);
+}
+
 bool Executors::removeDir(QString dirName)
 {
     bool result = true;
@@ -80,7 +85,7 @@ bool Executors::removeDir(QString dirName)
     return result;
 }
 
-void Executors::scanDir(QString dirName)
+void Executors::scanDir(QString dirName, QString dst)
 {
     QDir dir(dirName);
 
@@ -90,7 +95,7 @@ void Executors::scanDir(QString dirName)
     QStringList fileList = dir.entryList();
 
     for (int i = 0; i < fileList.count(); i++) {
-        QFile::copy(dirName + "/" + fileList[i], WorkCase::currentCase()->getWorkspace() + "/wave" + "/" + fileList[i]);
+        QFile::copy(dirName + "/" + fileList[i], WorkCase::currentCase()->getWorkspace() + "/" + dst + "/" + fileList[i]);
 
         QFile::remove(dirName + "/" + fileList[i]);
     }
@@ -718,6 +723,146 @@ void Executors::execTiedTriphone()
                        QString(WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed").replace("/", "\\"));
 
     job->exec->waitForFinished();
+
+    wait->close();
+}
+
+void Executors::execTest(QString waveTestPath, QString hviteCFG, QString hcopyCFG, QString test, QString recout, QString wordnet, QString dict)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Testing"));
+    this->_jobs.append(job);
+
+    job->exec->setName("testing");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Testing..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    QDir dir(waveTestPath);
+
+    dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QFileInfoList listFiles = dir.entryInfoList();
+
+    if (!dir.exists(WorkCase::currentCase()->getWorkspace() + "/test/wave")) {
+        dir.mkpath(WorkCase::currentCase()->getWorkspace() + "/test/wave");
+    }
+
+    foreach (QFileInfo info, listFiles) {
+        if (info.isDir()) {
+            QString path = info.absoluteFilePath();
+
+            job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/listwavmfc.pl " +
+                               path + " " + path + "/listwavmfc");
+
+            job->exec->waitForFinished();
+
+            job->exec->execute("HCopy -A -D -T 1  -C " +
+                               QApplication::applicationDirPath() + "/" + hcopyCFG + " -S " +
+                               path + "/listwavmfc");
+
+            job->exec->waitForFinished();
+
+            scanDir(path, "test/wave");
+
+            QFile::remove(path + "/listwavmfc");
+        }
+    }
+
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTrainFile.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/test/wave " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + test);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HVite -A -D -T 1 -C " +
+                       QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + test + " -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + wordnet + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/tiedlist");
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("HResults –f –t -I " +
+                       QApplication::applicationDirPath() + "/mlf/words.mlf " +
+                       WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout);
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while testing."));
+    } else {
+        console.logSuccess(tr("Testing successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execShowResult(QString recout)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Testing"));
+    this->_jobs.append(job);
+
+    job->exec->setName("testing");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Testing..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onResultLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HResults –f –t -I " +
+                       QApplication::applicationDirPath() + "/mlf/words.mlf " +
+                       WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout);
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while show result."));
+    } else {
+        console.logSuccess(tr("Show result successfull."));
+    }
 
     wait->close();
 }

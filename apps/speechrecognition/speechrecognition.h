@@ -61,6 +61,14 @@ private slots:
 
     void on_btnTiedTriphones_clicked();
 
+    void on_groupBoxTrainingStep_toggled(bool toggled);
+
+    void on_btnPromtTest_clicked();
+
+    void on_btnTest_clicked();
+
+    void on_btnWaveTest_clicked();
+
 private:
     void preparingData();
 
