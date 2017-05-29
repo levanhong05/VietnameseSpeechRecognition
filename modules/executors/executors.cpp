@@ -727,6 +727,78 @@ void Executors::execTiedTriphone()
     wait->close();
 }
 
+void Executors::execTiedTriphones(QString wintri, QString train, QString triphones1, QString hrestCFG)
+{
+    ExecutingJob *job = new ExecutingJob(tr("TiedTriphones"));
+    this->_jobs.append(job);
+
+    job->exec->setName("createTiedTriphones");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Create Tied Triphones..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
+//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+//                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
+
+//    job->exec->waitForFinished();
+
+//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
+//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+//                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+
+//    job->exec->waitForFinished();
+
+    job->exec->execute("HHEd -A -D -T 1 -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm12/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm12/hmmdefs -M " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm13 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + triphones1);
+
+    job->exec->waitForFinished();
+
+    for (int i = 14; i <= 15; i++) {
+        job->exec->execute("HERest -A -D -T 1 -T 1 -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 3000.0 -s stats -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/tiedlist");
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create tied state triphones."));
+    } else {
+        console.logSuccess(tr("Create tied state triphones successfull."));
+    }
+
+    wait->close();
+}
+
 void Executors::execTest(QString waveTestPath, QString hviteCFG, QString hcopyCFG, QString test, QString recout, QString wordnet, QString dict)
 {
     ExecutingJob *job = new ExecutingJob(tr("Testing"));
@@ -862,78 +934,6 @@ void Executors::execShowResult(QString recout)
         console.logError(tr("Errors occurred while show result."));
     } else {
         console.logSuccess(tr("Show result successfull."));
-    }
-
-    wait->close();
-}
-
-void Executors::execTiedTriphones(QString wintri, QString train, QString triphones1, QString hrestCFG)
-{
-    ExecutingJob *job = new ExecutingJob(tr("TiedTriphones"));
-    this->_jobs.append(job);
-
-    job->exec->setName("createTiedTriphones");
-
-    WaitingDialog *wait = new WaitingDialog(tr("Create Tied Triphones..."));
-
-    QIcon icon(":/speech/images/chat.png");
-    wait->setWindowIcon(icon);
-
-    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
-
-    job->exec->setUseCustomErrorHandler(true);
-
-    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
-
-    job->exec->start();
-
-    wait->show();
-
-#ifdef Q_OS_LINUX
-    job->exec->directExecute("source /opt/htk341/etc/bashrc");
-#else
-    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
-#endif
-    job->exec->waitForFinished();
-
-//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
-//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-//                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
-
-//    job->exec->waitForFinished();
-
-//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
-//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-//                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
-
-//    job->exec->waitForFinished();
-
-    job->exec->execute("HHEd -A -D -T 1 -H " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm12/macros -H " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm12/hmmdefs -M " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm13 " +
-                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + triphones1);
-
-    job->exec->waitForFinished();
-
-    for (int i = 14; i <= 15; i++) {
-        job->exec->execute("HERest -A -D -T 1 -T 1 -C " +
-                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
-                           WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 3000.0 -s stats -S " +
-                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
-                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
-                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
-                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
-                           WorkCase::currentCase()->getWorkspace() + "/tiedlist");
-
-        job->exec->waitForFinished();
-    }
-
-    if (job->exec->lastExitCode() != 0) {
-        console.logError(tr("Errors occurred while create tied state triphones."));
-    } else {
-        console.logSuccess(tr("Create tied state triphones successfull."));
     }
 
     wait->close();

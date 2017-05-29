@@ -119,6 +119,8 @@ void SpeechRecognition::onTrainingDictionaryFinished()
     executors.execTiedTriphone();
 
     executors.execTiedTriphones();
+
+    console.logSuccess(tr("Training successfull!!!"));
 }
 
 void SpeechRecognition::on_actionConvert_Typing_triggered()
