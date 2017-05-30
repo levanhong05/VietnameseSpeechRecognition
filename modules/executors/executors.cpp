@@ -954,10 +954,11 @@ void Executors::execShowResult(QString recout)
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HResults –f –t -I " +
+    job->exec->execute("HResults -I " +
                        WorkCase::currentCase()->getWorkspace() + "/mlf/words.mlf " +
                        WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + recout);
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " " +
+                       "> test/result");
 
     job->exec->waitForFinished();
 
