@@ -69,6 +69,10 @@ private slots:
 
     void on_btnWaveTest_clicked();
 
+    void on_btnTestData_clicked();
+
+    void on_btnResult_clicked();
+
 private:
     void preparingData();
 

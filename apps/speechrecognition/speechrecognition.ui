@@ -464,22 +464,23 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QPushButton" name="btnTestData">
+            <property name="text">
+             <string>Preparing Data</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="btnTest">
             <property name="text">
              <string>Test</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnResult">
+            <property name="text">
+             <string>Show Result</string>
             </property>
            </widget>
           </item>

@@ -87,6 +87,12 @@ void SpeechRecognition::startTestingData()
         QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for testing."), QMessageBox::Ok);
         return;
     }
+
+    executors.execPreparingDataTest(ui->txtWaveTest->text());
+
+    executors.execTest();
+
+    executors.execShowResult();
 }
 
 void SpeechRecognition::onCreateDictionaryFinished()
@@ -343,19 +349,7 @@ void SpeechRecognition::on_btnPromtTest_clicked()
 
 void SpeechRecognition::on_btnTest_clicked()
 {
-    if (ui->txtPromtTest->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data for testing."), QMessageBox::Ok);
-        return;
-    }
-
-    if (ui->txtWaveTest->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for testing."), QMessageBox::Ok);
-        return;
-    }
-
-    executors.execTest(ui->txtWaveTest->text());
-
-    executors.execShowResult();
+    executors.execTest();
 }
 
 void SpeechRecognition::on_btnWaveTest_clicked()
@@ -368,4 +362,24 @@ void SpeechRecognition::on_btnWaveTest_clicked()
     if (!dir.isEmpty()) {
         ui->txtWaveTest->setText(dir);
     }
+}
+
+void SpeechRecognition::on_btnTestData_clicked()
+{
+    if (ui->txtPromtTest->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts data for testing."), QMessageBox::Ok);
+        return;
+    }
+
+    if (ui->txtWaveTest->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for testing."), QMessageBox::Ok);
+        return;
+    }
+
+    executors.execPreparingDataTest(ui->txtWaveTest->text());
+}
+
+void SpeechRecognition::on_btnResult_clicked()
+{
+    executors.execShowResult();
 }

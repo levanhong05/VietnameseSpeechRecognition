@@ -799,7 +799,7 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
     wait->close();
 }
 
-void Executors::execTest(QString waveTestPath, QString hviteCFG, QString hcopyCFG, QString test, QString recout, QString wordnet, QString dict)
+void Executors::execTest(QString hviteCFG, QString test, QString recout, QString wordnet, QString dict)
 {
     ExecutingJob *job = new ExecutingJob(tr("Testing"));
     this->_jobs.append(job);
@@ -807,6 +807,56 @@ void Executors::execTest(QString waveTestPath, QString hviteCFG, QString hcopyCF
     job->exec->setName("testing");
 
     WaitingDialog *wait = new WaitingDialog(tr("Testing..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HVite -A -D -T 1 -C " +
+                       QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + test + " -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + wordnet + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/tiedlist");
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while testing."));
+    } else {
+        console.logSuccess(tr("Testing successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QString test)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Testing"));
+    this->_jobs.append(job);
+
+    job->exec->setName("preparingDataTesting");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Preparing Data Testing..."));
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -865,29 +915,10 @@ void Executors::execTest(QString waveTestPath, QString hviteCFG, QString hcopyCF
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HVite -A -D -T 1 -C " +
-                       QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + test + " -i " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + wordnet + " " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
-                       WorkCase::currentCase()->getWorkspace() + "/tiedlist");
-
-    job->exec->waitForFinished();
-
-    job->exec->execute("HResults –f –t -I " +
-                       QApplication::applicationDirPath() + "/mlf/words.mlf " +
-                       WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + recout);
-
-    job->exec->waitForFinished();
-
     if (job->exec->lastExitCode() != 0) {
-        console.logError(tr("Errors occurred while testing."));
+        console.logError(tr("Errors occurred while preparing data testing."));
     } else {
-        console.logSuccess(tr("Testing successfull."));
+        console.logSuccess(tr("Preparing data testing successfull."));
     }
 
     wait->close();
