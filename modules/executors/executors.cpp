@@ -51,6 +51,12 @@ ExecutingJob ::ExecutingJob(QString title, QWidget *parent) :
     this->exec->setLogWidget(this->logWidget->logView());
 }
 
+Executors::Executors(QObject *parent) :
+    QObject(parent)
+{
+    _isWrite = false;
+}
+
 void Executors::onErrorLogging(QString log)
 {
     console.logError(log);
@@ -58,7 +64,28 @@ void Executors::onErrorLogging(QString log)
 
 void Executors::onResultLogging(QString result)
 {
-    console.logInfo(result);
+    if (result == "====================== HTK Results Analysis =======================") {
+        _isWrite = true;
+        console.log("");
+    }
+
+    if (result == "===================================================================") {
+        console.logInfo(result);
+        _isWrite = false;
+    }
+
+    if (_isWrite) {
+        console.logInfo(result);
+        console.log("");
+    }
+}
+
+void Executors::onTestLogging(QString result)
+{
+    if (_isWrite) {
+        console.logInfo(result);
+        console.log("");
+    }
 }
 
 bool Executors::removeDir(QString dirName)
@@ -799,7 +826,7 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
     wait->close();
 }
 
-void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QString test)
+void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QString test, QString prompts, QString mlfwords)
 {
     ExecutingJob *job = new ExecutingJob(tr("Testing"));
     this->_jobs.append(job);
@@ -865,6 +892,12 @@ void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QS
 
     job->exec->waitForFinished();
 
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/prompts2mlf.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + mlfwords + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + prompts);
+
+    job->exec->waitForFinished();
+
     if (job->exec->lastExitCode() != 0) {
         console.logError(tr("Errors occurred while preparing data testing."));
     } else {
@@ -892,7 +925,7 @@ void Executors::execTest(QString hviteCFG, QString test, QString recout, QString
     job->exec->setUseCustomErrorHandler(true);
 
     connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
-    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onResultLogging(QString)));
+    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onTestLogging(QString)));
 
     job->exec->start();
 
@@ -958,10 +991,9 @@ void Executors::execShowResult(QString recout)
     job->exec->waitForFinished();
 
     job->exec->execute("HResults -I " +
-                       WorkCase::currentCase()->getWorkspace() + "/mlf/words.mlf " +
+                       WorkCase::currentCase()->getWorkspace() + "/test/words.mlf " +
                        WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " " +
-                       "> test/result");
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout);
 
     job->exec->waitForFinished();
 

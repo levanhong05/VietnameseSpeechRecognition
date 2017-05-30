@@ -344,6 +344,18 @@ void SpeechRecognition::on_btnPromtTest_clicked()
 
     if (QFile::exists(filePath)) {
         ui->txtPromtTest->setText(filePath);
+
+        QDir dir(WorkCase::currentCase()->getWorkspace());
+
+        if (!dir.exists(WorkCase::currentCase()->getWorkspace() + "/test")) {
+            dir.mkpath(WorkCase::currentCase()->getWorkspace() + "/test");
+        }
+
+        if (QFile::exists(WorkCase::currentCase()->getWorkspace() + "/test/prompts.txt")) {
+            QFile::remove(WorkCase::currentCase()->getWorkspace() + "/test/prompts.txt");
+        }
+
+        QFile::copy(filePath, WorkCase::currentCase()->getWorkspace() + "/test/prompts.txt");
     }
 }
 

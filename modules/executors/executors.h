@@ -32,6 +32,9 @@ typedef struct ExecutingJob{
 class EXECUTORSSHARED_EXPORT Executors : public QObject
 {
     Q_OBJECT
+public:
+    Executors(QObject *parent = 0);
+
 public slots:
     void execWordNet(QString grammar = "text/grammar.txt", QString wordnet = "text/wdnet.txt");
 
@@ -72,7 +75,8 @@ public slots:
                   QString wordnet = "text/wdnet.txt", QString dict = "text/dict.dct");
 
     void execPreparingDataTest(QString waveTestPath, QString hcopyCFG = "config/HCopy.cfg",
-                  QString test = "test/test.scp");
+                               QString test = "test/test.scp",
+                               QString prompts = "test/prompts.txt", QString mlfwords = "test/words.mlf");
 
     void execShowResult(QString recout = "test/recout.mlf");
 
@@ -80,6 +84,8 @@ private slots:
     void onErrorLogging(QString);
 
     void onResultLogging(QString result);
+
+    void onTestLogging(QString result);
 
 private:
     QString shortPathName(const QString &file);
@@ -92,7 +98,7 @@ private:
     QList<ExecutingJob *> _jobs;
 
     WaitingDialog *_wait;
-    bool _isAbort;
+    bool _isWrite;
 };
 
 extern Executors EXECUTORSSHARED_EXPORT executors;
