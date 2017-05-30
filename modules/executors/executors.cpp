@@ -140,7 +140,7 @@ void Executors::execWordNet(QString grammar, QString wordnet)
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HParse " + WorkCase::currentCase()->getWorkspace() + "/" + grammar +
+    job->exec->execute("HParse -A -D -V -T 1 " + WorkCase::currentCase()->getWorkspace() + "/" + grammar +
                        " " + WorkCase::currentCase()->getWorkspace() + "/" + wordnet);
 
     job->exec->waitForFinished();
@@ -191,7 +191,7 @@ void Executors::execMonophones(QString prompts, QString wlist,
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HDMan -A -D -T 1 -m -w " +
+    job->exec->execute("HDMan -A -D -V -T 1 -m -w " +
                        WorkCase::currentCase()->getWorkspace() + "/" + wlist + " -n " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mphones + " -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dstDict + " " +
@@ -251,7 +251,7 @@ void Executors::execTranscription(QString prompts, QString mlfwords, QString dic
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -A -D -T 1 -l * -d " +
+    job->exec->execute("HLEd -A -D -V -T 1 -l * -d " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dict + " -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mlfphone0 + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mkphones0 + " " +
@@ -259,7 +259,7 @@ void Executors::execTranscription(QString prompts, QString mlfwords, QString dic
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -A -D -T 1 -l * -d " +
+    job->exec->execute("HLEd -A -D -V -T 1 -l * -d " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dict + " -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mlfphone1 + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + mkphones1 + " " +
@@ -318,7 +318,7 @@ void Executors::execMFCC(QString path, QString hcopyCFG)
 
             job->exec->waitForFinished();
 
-            job->exec->execute("HCopy -A -D -T 1  -C " +
+            job->exec->execute("HCopy -A -D -V -T 1  -C " +
                                QApplication::applicationDirPath() + "/" + hcopyCFG + " -S " +
                                path + "/listwavmfc");
 
@@ -374,7 +374,7 @@ void Executors::execProto(QString wave, QString train, QString hcomvCFG)
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HCompV -A -D -T 1 -C " +
+    job->exec->execute("HCompV -A -D -V -T 1 -C " +
                        QApplication::applicationDirPath() + "/" + hcomvCFG + " -f 0.01 -m -S " +
                        WorkCase::currentCase()->getWorkspace() + "/" + train + " -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm0 " +
@@ -434,7 +434,7 @@ void Executors::execHRest(QString train, QString hrestCFG)
     job->exec->waitForFinished();
 
     for (int i = 1; i <= 3; i++) {
-        job->exec->execute("HERest -A -D -T 1 -C " +
+        job->exec->execute("HERest -A -D -V -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/phones0.mlf" + " -t 250.0 150.0 1000.0 -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -492,7 +492,7 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HHEd -A -D -T 1 -H " +
+    job->exec->execute("HHEd -A -D -V -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm4/macros" + " -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm4/hmmdefs" + " -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm5 " +
@@ -502,7 +502,7 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
     job->exec->waitForFinished();
 
     for (int i = 6; i <= 7; i++) {
-        job->exec->execute("HERest -A -D -T 1 -C " +
+        job->exec->execute("HERest -A -D -V -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/phones1.mlf" + " -t 250.0 150.0 1000.0 -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -552,7 +552,7 @@ void Executors::execHVite(QString monophones1, QString dict, QString train, QStr
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HVite -A -D -T 1 -l * -o SWT -b silence -C " +
+    job->exec->execute("HVite -A -D -V -T 1 -l * -o SWT -b silence -C " +
                        QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm7/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm7/hmmdefs -i " +
@@ -567,7 +567,7 @@ void Executors::execHVite(QString monophones1, QString dict, QString train, QStr
     wait->setTitle(tr("Running HERest..."));
 
     for (int i = 8; i <= 9; i++) {
-        job->exec->execute("HERest -A -D -T 1 -C " +
+        job->exec->execute("HERest -A -D -V -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf -t 250.0 150.0 1000.0 -s stats -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -617,7 +617,7 @@ void Executors::execTriphones(QString train, QString triphones1, QString hrestCF
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -A -D -T 1 -n " +
+    job->exec->execute("HLEd -A -D -V -T 1 -n " +
                        WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 -l * -i " +
                        WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf " +
                        WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.led " +
@@ -632,7 +632,7 @@ void Executors::execTriphones(QString train, QString triphones1, QString hrestCF
 
     job->exec->waitForFinished();
 
-    job->exec->execute("HHEd -A -D -T 1 -H " +
+    job->exec->execute("HHEd -A -D -V -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm9/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm9/hmmdefs -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm10 " +
@@ -642,7 +642,7 @@ void Executors::execTriphones(QString train, QString triphones1, QString hrestCF
     job->exec->waitForFinished();
 
     for (int i = 11; i <= 12; i++) {
-        job->exec->execute("HERest -A -D -T 1 -C " +
+        job->exec->execute("HERest -A -D -V -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf -t 250.0 150.0 3000.0 -s stats -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -688,7 +688,7 @@ void Executors::execTiedTriphone()
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HDMan -A -D -T 1 -b sp -n " +
+    job->exec->execute("HDMan -A -D -V -T 1 -b sp -n " +
                        WorkCase::currentCase()->getWorkspace() + "/fulllist -g " +
                        WorkCase::currentCase()->getWorkspace() + "/instruction/maketriphones.ded " +
                        WorkCase::currentCase()->getWorkspace() + "/text/dict-tri " +
@@ -768,7 +768,7 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
 
 //    job->exec->waitForFinished();
 
-    job->exec->execute("HHEd -A -D -T 1 -H " +
+    job->exec->execute("HHEd -A -D -V -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm12/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm12/hmmdefs -M " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm13 " +
@@ -778,7 +778,7 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
     job->exec->waitForFinished();
 
     for (int i = 14; i <= 15; i++) {
-        job->exec->execute("HERest -A -D -T 1 -T 1 -C " +
+        job->exec->execute("HERest -A -D -V -T 1 -T 1 -C " +
                            QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
                            WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 3000.0 -s stats -S " +
                            WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
@@ -794,56 +794,6 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
         console.logError(tr("Errors occurred while create tied state triphones."));
     } else {
         console.logSuccess(tr("Create tied state triphones successfull."));
-    }
-
-    wait->close();
-}
-
-void Executors::execTest(QString hviteCFG, QString test, QString recout, QString wordnet, QString dict)
-{
-    ExecutingJob *job = new ExecutingJob(tr("Testing"));
-    this->_jobs.append(job);
-
-    job->exec->setName("testing");
-
-    WaitingDialog *wait = new WaitingDialog(tr("Testing..."));
-
-    QIcon icon(":/speech/images/chat.png");
-    wait->setWindowIcon(icon);
-
-    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
-
-    job->exec->setUseCustomErrorHandler(true);
-
-    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
-
-    job->exec->start();
-
-    wait->show();
-
-#ifdef Q_OS_LINUX
-    job->exec->directExecute("source /opt/htk341/etc/bashrc");
-#else
-    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
-#endif
-    job->exec->waitForFinished();
-
-    job->exec->execute("HVite -A -D -T 1 -C " +
-                       QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
-                       WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + test + " -i " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + wordnet + " " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
-                       WorkCase::currentCase()->getWorkspace() + "/tiedlist");
-
-    job->exec->waitForFinished();
-
-    if (job->exec->lastExitCode() != 0) {
-        console.logError(tr("Errors occurred while testing."));
-    } else {
-        console.logSuccess(tr("Testing successfull."));
     }
 
     wait->close();
@@ -897,7 +847,7 @@ void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QS
 
             job->exec->waitForFinished();
 
-            job->exec->execute("HCopy -A -D -T 1  -C " +
+            job->exec->execute("HCopy -A -D -V -T 1  -C " +
                                QApplication::applicationDirPath() + "/" + hcopyCFG + " -S " +
                                path + "/listwavmfc");
 
@@ -924,6 +874,58 @@ void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QS
     wait->close();
 }
 
+void Executors::execTest(QString hviteCFG, QString test, QString recout, QString wordnet, QString dict)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Testing"));
+    this->_jobs.append(job);
+
+    job->exec->setName("testing");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Testing..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomLogHandler(true);
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onResultLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HVite -A -D -V -T 1 -C " +
+                       QApplication::applicationDirPath() + "/" + hviteCFG + " -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + test + " -l * -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + wordnet + " -p 0.0 -s 5.0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/tiedlist");
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while testing."));
+    } else {
+        console.logSuccess(tr("Testing successfull."));
+    }
+
+    wait->close();
+}
+
 void Executors::execShowResult(QString recout)
 {
     ExecutingJob *job = new ExecutingJob(tr("Testing"));
@@ -938,10 +940,11 @@ void Executors::execShowResult(QString recout)
 
     connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
 
+    job->exec->setUseCustomLogHandler(true);
     job->exec->setUseCustomErrorHandler(true);
 
-    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
     connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onResultLogging(QString)));
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
 
     job->exec->start();
 
