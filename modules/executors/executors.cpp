@@ -955,7 +955,7 @@ void Executors::execShowResult(QString recout)
     job->exec->waitForFinished();
 
     job->exec->execute("HResults –f –t -I " +
-                       QApplication::applicationDirPath() + "/mlf/words.mlf " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/words.mlf " +
                        WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
                        WorkCase::currentCase()->getWorkspace() + "/" + recout);
 
