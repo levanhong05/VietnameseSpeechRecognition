@@ -892,12 +892,6 @@ void Executors::execPreparingDataTest(QString waveTestPath, QString hcopyCFG, QS
 
     job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/prompts2mlf.pl " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + mlfwords + " " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + prompts);
-
-    job->exec->waitForFinished();
-
     if (job->exec->lastExitCode() != 0) {
         console.logError(tr("Errors occurred while preparing data testing."));
     } else {
@@ -991,7 +985,7 @@ void Executors::execShowResult(QString recout)
     job->exec->waitForFinished();
 
     job->exec->execute("HResults -I " +
-                       WorkCase::currentCase()->getWorkspace() + "/test/words.mlf " +
+                       WorkCase::currentCase()->getWorkspace() + "/mlf/words.mlf " +
                        WorkCase::currentCase()->getWorkspace() + "/tiedlist " +
                        WorkCase::currentCase()->getWorkspace() + "/" + recout);
 
