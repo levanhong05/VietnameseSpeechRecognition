@@ -71,21 +71,21 @@ void Executors::onResultLogging(QString result)
 
     if (result == "===================================================================") {
         console.logInfo(result);
+        console.log("");
         _isWrite = false;
     }
 
     if (_isWrite) {
         console.logInfo(result);
-        console.log("");
     }
 }
 
 void Executors::onTestLogging(QString result)
 {
-    if (_isWrite) {
+    //if (_isWrite) {
         console.logInfo(result);
-        console.log("");
-    }
+     //   console.log("");
+    //}
 }
 
 bool Executors::removeDir(QString dirName)
