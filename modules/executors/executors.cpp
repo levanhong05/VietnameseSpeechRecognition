@@ -71,6 +71,7 @@ void Executors::onResultLogging(QString result)
 
     if (result == "===================================================================") {
         console.logInfo(result);
+
         console.log("");
         _isWrite = false;
     }
@@ -82,10 +83,12 @@ void Executors::onResultLogging(QString result)
 
 void Executors::onTestLogging(QString result)
 {
-    //if (_isWrite) {
+    if (result.endsWith(".mfc")) {
         console.logInfo(result);
-     //   console.log("");
-    //}
+    } else if (result.contains("==") && result.contains("frames]")) {
+        console.logExtend(result);
+        console.log("");
+    }
 }
 
 bool Executors::removeDir(QString dirName)
@@ -783,17 +786,17 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
 #endif
     job->exec->waitForFinished();
 
-//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
-//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-//                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
 
-//    job->exec->waitForFinished();
+    job->exec->waitForFinished();
 
-//    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
-//                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-//                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
+                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
 
-//    job->exec->waitForFinished();
+    job->exec->waitForFinished();
 
     job->exec->execute("HHEd -A -D -V -T 1 -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm12/macros -H " +

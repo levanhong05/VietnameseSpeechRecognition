@@ -122,7 +122,7 @@ void SpeechRecognition::onTrainingDictionaryFinished()
 
     executors.execTriphones();
 
-    executors.execTiedTriphone();
+    //executors.execTiedTriphone();
 
     executors.execTiedTriphones();
 
@@ -324,7 +324,7 @@ void SpeechRecognition::on_btnCreateTriphones_clicked()
 
 void SpeechRecognition::on_btnTiedTriphones_clicked()
 {
-    executors.execTiedTriphone();
+    //executors.execTiedTriphone();
 
     executors.execTiedTriphones();
 }
@@ -394,4 +394,9 @@ void SpeechRecognition::on_btnTestData_clicked()
 void SpeechRecognition::on_btnResult_clicked()
 {
     executors.execShowResult();
+}
+
+void SpeechRecognition::on_groupBoxTestStep_toggled(bool toggled)
+{
+    ui->frameTesting->setVisible(toggled);
 }

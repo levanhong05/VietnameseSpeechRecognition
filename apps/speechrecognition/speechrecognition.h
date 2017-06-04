@@ -73,6 +73,8 @@ private slots:
 
     void on_btnResult_clicked();
 
+    void on_groupBoxTestStep_toggled(bool toggled);
+
 private:
     void preparingData();
 
