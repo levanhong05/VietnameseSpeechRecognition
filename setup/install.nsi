@@ -1,9 +1,9 @@
-NAME "Vietnamese Speech Recognition"
+NAME "Speech Recognition"
 !define PRODUCT "SpeechRecognition"
 !define VERSION "1.0.0"
-!define PROUCT_NAME "Vietnamese Speech Recognition"
+!define PROUCT_NAME "Speech Recognition"
 
-!define URLInfoAbout "https://github.com/levanhong05/SolvingQuadraticEquation"
+!define URLInfoAbout "https://github.com/levanhong05/VietnameseSpeechRecognition"
 !define YourName "Eric Lee"
 
 !include "MUI.nsh"
@@ -16,8 +16,8 @@ NAME "Vietnamese Speech Recognition"
 CRCCheck On
 SetCompressor lzma
 
-OutFile "SpeechRecognition.exe"
-BRANDINGTEXT "Vietnamese Speech Recognition Installer created by Eric Lee"
+OutFile "SpeechRecognition_v${VERSION}.exe"
+BRANDINGTEXT "Speech Recognition Installer created by Eric Lee"
 
 InstallDir "$PROGRAMFILES\${PRODUCT}"
 InstallDirRegKey HKCU "Software\${PRODUCT}" ""
@@ -66,11 +66,7 @@ FunctionEnd
 
 Section "section_1" section_1
 SetOutPath "$INSTDIR"
-FILE SpeechRecognition.exe
-FILE Qt5Core.dll
-FILE Qt5Gui.dll
-FILE Qt5Widgets.dll
-FILE qwindows.dll
+FILE /r "file\*"
 SectionEnd
 
 Section Icons
