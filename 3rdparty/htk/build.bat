@@ -24,10 +24,20 @@ cd HLMTools
 nmake /f htk_hlmtools_nt.mkf all
 cd ..
 
+cd HTKDecode
+nmake /f htk_hdecode_nt.mkf all
+cd ..
+
 echo copy HTK tools
 
 mkdir ..\..\dist\bin\HTK
 
 copy bin.win32\*.exe ..\..\dist\bin\HTK\
+
+echo copy HTK Decode tools
+cd HTKDecode
+ren HDecode.orig.exe HDecode.exe
+cd ..
+copy HTKDecode\*.exe ..\..\dist\bin\HTK\
 
 exit 0
