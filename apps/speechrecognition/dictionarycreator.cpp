@@ -90,7 +90,7 @@ void DictionaryCreator::create()
     QTextStream out(&grammarFile);
 
     out << "$word = " << words.join(" | ") << ";" << endl << endl;
-    out << "(<$word>)" << endl;
+    out << "( SENT-START ( <$word>) SENT-END )" << endl;
 
     grammarFile.close();
 
@@ -152,7 +152,9 @@ void DictionaryCreator::create()
         outDic << "sp" << endl;
     }
 
-    outDic << "silence" << "\t" << "sil" << endl;
+    outDic << "SENT-START" << "\t" << "[] sil" << endl;
+    outDic << "SENT-END" << "\t" << "[] sil" << endl;
+    outDic << "silence" << "\t" << "[] sil" << endl;
 
     dictFile.close();
 }

@@ -29,6 +29,10 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
 
     console.logInfo(tr("Vietnamese Speech Recognition Program !!!"));
 
+    _isLanguageModel = false;
+
+    _isTriGram = true;
+
     preparingData();
 
     QAction *actionTraining = ui->toolBar->addAction(QIcon(":/speech/images/train.png"), tr("Training"));
@@ -399,4 +403,28 @@ void SpeechRecognition::on_btnResult_clicked()
 void SpeechRecognition::on_groupBoxTestStep_toggled(bool toggled)
 {
     ui->frameTesting->setVisible(toggled);
+}
+
+void SpeechRecognition::on_rbnPhoneticModel_toggled(bool checked)
+{
+    _isLanguageModel = !checked;
+
+    ui->groupBoxGram->setVisible(_isLanguageModel);
+}
+
+void SpeechRecognition::on_rbnLanguagModel_toggled(bool checked)
+{
+    _isLanguageModel = checked;
+
+    ui->groupBoxGram->setVisible(_isLanguageModel);
+}
+
+void SpeechRecognition::on_rbnBiGram_toggled(bool checked)
+{
+    _isTriGram = !checked;
+}
+
+void SpeechRecognition::on_rbnTriGram_toggled(bool checked)
+{
+    _isTriGram = checked;
 }

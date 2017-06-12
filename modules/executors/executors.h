@@ -68,8 +68,6 @@ public slots:
     void execTiedTriphones(QString wintri = "mlf/wintri.mlf", QString train = "text/train.scp",
                            QString triphones1 = "phones/triphones1", QString hrestCFG = "config/HERest.cfg");
 
-    void execTiedTriphone();
-
     void execTest(QString hviteCFG = "config/HVite.cfg",
                   QString test = "test/test.scp", QString recout = "test/recout.mlf",
                   QString wordnet = "text/wdnet.txt", QString dict = "text/dict.dct");

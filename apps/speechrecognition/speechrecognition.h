@@ -75,6 +75,10 @@ private slots:
 
     void on_groupBoxTestStep_toggled(bool toggled);
 
+    void on_rbnPhoneticModel_toggled(bool checked);
+
+    void on_rbnLanguagModel_toggled(bool checked);
+
 private:
     void preparingData();
 
@@ -84,6 +88,10 @@ private:
 
 private:
     Ui::SpeechRecognition *ui;
+
+    bool _isLanguageModel;
+
+    bool _isTriGram;
 
 };
 
