@@ -91,6 +91,28 @@ void Executors::onTestLogging(QString result)
     }
 }
 
+void Executors::onPerplexityLogging(QString result)
+{
+    if (result.startsWith("LPlex test #0")) {
+        _isWrite = true;
+        console.log("");
+    }
+
+    if (result.trimmed().startsWith("bigram")) {
+        console.logInfo(result);
+        _isWrite = false;
+    }
+
+    if (result.trimmed().startsWith("trigram")) {
+        console.logInfo(result);
+        _isWrite = false;
+    }
+
+    if (_isWrite) {
+        console.logInfo(result);
+    }
+}
+
 bool Executors::removeDir(QString dirName)
 {
     bool result = true;
@@ -939,6 +961,111 @@ void Executors::execTestDecode(QString hdecodeCFG, QString test, QString recout,
         console.logError(tr("Errors occurred while decoding."));
     } else {
         console.logSuccess(tr("Decoding successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execBuildLanguageModel(QString trainPath, bool isTrigram, QString name, QString trigramPath, QString emptyPath, QString gramPath)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Build LM"));
+    this->_jobs.append(job);
+
+    job->exec->setName("buildLM");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Build Language Model..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomLogHandler(true);
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("LNewMap -f WFC "+ name + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + emptyPath);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("LGPrep -T 1 -a 1000000 -b 2000000000 -d lm -n "+ (isTrigram ? QString::number(3) : QString::number(2)) + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + emptyPath + " " +
+                       trainPath);
+
+    job->exec->waitForFinished();
+
+    job->exec->execute("LBuild -T 1 -c 2 0 -c 3 0 -n "+ (isTrigram ? QString::number(3) : QString::number(2)) + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/lm/wmap " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + trigramPath + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + gramPath);
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while build language model."));
+    } else {
+        console.logSuccess(tr("Build language model successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execRunPerplexity(QString testPath, bool isTrigram, QString trigramPath)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Perplexity"));
+    this->_jobs.append(job);
+
+    job->exec->setName("perplexity");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Run perplexity..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomLogHandler(true);
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onPerplexityLogging(QString)));
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("LPlex -n "+ (isTrigram ? QString::number(3) : QString::number(2)) + " -t " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + trigramPath + " " +
+                       testPath);
+
+    job->exec->waitForFinished();
+
+    console.log("");
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while run perplexity."));
+    } else {
+        console.logSuccess(tr("Run perplexity successfull."));
     }
 
     wait->close();

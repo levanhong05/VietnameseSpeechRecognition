@@ -36,7 +36,7 @@ void TypingConverter::on_btnUni2Telex_clicked()
         QTextStream in(&file);
         in.setCodec("UTF-8");
 
-        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + "promts_uni2telex.txt");
+        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + path.mid(path.lastIndexOf("/") + 1, path.length() - 4) + "_uni2telex.txt");
         outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
         QTextStream out(&outFile);
@@ -74,7 +74,7 @@ void TypingConverter::on_btnUni2VNI_clicked()
         QTextStream in(&file);
         in.setCodec("UTF-8");
 
-        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + "promts_uni2vni.txt");
+        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + path.mid(path.lastIndexOf("/") + 1, path.length() - 4) + "_uni2vni.txt");
         outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
         QTextStream out(&outFile);
@@ -112,7 +112,7 @@ void TypingConverter::on_btnTelex2VNI_clicked()
         QTextStream in(&file);
         in.setCodec("UTF-8");
 
-        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + "promts_telex2vni.txt");
+        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + path.mid(path.lastIndexOf("/") + 1, path.length() - 4) + "_telex2vni.txt");
         outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
         QTextStream out(&outFile);
@@ -150,7 +150,7 @@ void TypingConverter::on_btnTelex2Uni_clicked()
         QTextStream in(&file);
         in.setCodec("UTF-8");
 
-        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + "promts_telex2uni.txt");
+        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + path.mid(path.lastIndexOf("/") + 1, path.length() - 4) + "_telex2uni.txt");
         outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
         QTextStream out(&outFile);
@@ -188,7 +188,7 @@ void TypingConverter::on_btnVNI2Uni_clicked()
         QTextStream in(&file);
         in.setCodec("UTF-8");
 
-        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + "promts_vni2uni.txt");
+        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + path.mid(path.lastIndexOf("/") + 1, path.length() - 4) + "_vni2uni.txt");
         outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
         QTextStream out(&outFile);
@@ -226,7 +226,7 @@ void TypingConverter::on_btnVNI2Telex_clicked()
         QTextStream in(&file);
         in.setCodec("UTF-8");
 
-        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + "promts_vni2telex.txt");
+        QFile outFile(path.mid(0, path.lastIndexOf("/") + 1) + path.mid(path.lastIndexOf("/") + 1, path.length() - 4) + "_vni2telex.txt");
         outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
 
         QTextStream out(&outFile);

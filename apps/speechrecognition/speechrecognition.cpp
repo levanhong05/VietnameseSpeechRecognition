@@ -32,6 +32,8 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
     _isLanguageModel = false;
 
     ui->groupBoxGram->setVisible(false);
+    ui->frameLMTrain->setVisible(false);
+    ui->frameLMTest->setVisible(false);
 
     _isTriGram = true;
 
@@ -71,6 +73,13 @@ void SpeechRecognition::startTrainingData()
         return;
     }
 
+    if (_isLanguageModel) {
+        if (ui->txtLMTrainPath->text().isEmpty()) {
+            QMessageBox::critical(this, tr("Missing Data"), tr("Please select LM training data."), QMessageBox::Ok);
+            return;
+        }
+    }
+
     DictionaryCreator *creator = new DictionaryCreator();
 
     WaitingDialog *wait = new WaitingDialog(tr("Create Dictionary..."));
@@ -92,6 +101,18 @@ void SpeechRecognition::startTestingData()
     if (ui->txtWaveTest->text().isEmpty()) {
         QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave data for testing."), QMessageBox::Ok);
         return;
+    }
+
+    if (_isLanguageModel) {
+        if (ui->txtLMTrainPath->text().isEmpty()) {
+            QMessageBox::critical(this, tr("Missing Data"), tr("Please select LM training data."), QMessageBox::Ok);
+            return;
+        }
+
+        if (ui->txtLMTestPath->text().isEmpty()) {
+            QMessageBox::critical(this, tr("Missing Data"), tr("Please select LM test data."), QMessageBox::Ok);
+            return;
+        }
     }
 
     executors.execPreparingDataTest(ui->txtWaveTest->text());
@@ -417,6 +438,12 @@ void SpeechRecognition::on_rbnPhoneticModel_toggled(bool checked)
     _isLanguageModel = !checked;
 
     ui->groupBoxGram->setVisible(_isLanguageModel);
+
+    ui->frameLMTrain->setVisible(_isLanguageModel);
+    ui->frameLMTest->setVisible(_isLanguageModel);
+
+    ui->btnBuildLM->setVisible(_isLanguageModel);
+    ui->btnRunPerplexity->setVisible(_isLanguageModel);
 }
 
 void SpeechRecognition::on_rbnLanguagModel_toggled(bool checked)
@@ -424,6 +451,12 @@ void SpeechRecognition::on_rbnLanguagModel_toggled(bool checked)
     _isLanguageModel = checked;
 
     ui->groupBoxGram->setVisible(_isLanguageModel);
+
+    ui->frameLMTrain->setVisible(_isLanguageModel);
+    ui->frameLMTest->setVisible(_isLanguageModel);
+
+    ui->btnBuildLM->setVisible(_isLanguageModel);
+    ui->btnRunPerplexity->setVisible(_isLanguageModel);
 }
 
 void SpeechRecognition::on_rbnBiGram_toggled(bool checked)
@@ -434,4 +467,50 @@ void SpeechRecognition::on_rbnBiGram_toggled(bool checked)
 void SpeechRecognition::on_rbnTriGram_toggled(bool checked)
 {
     _isTriGram = checked;
+}
+
+void SpeechRecognition::on_btnLMBrowse_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open LM Train Data"), QString(QApplication::applicationDirPath()), tr("Text File (*.txt)"));
+
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    if (QFile::exists(filePath)) {
+        ui->txtLMTrainPath->setText(filePath);
+    }
+}
+
+void SpeechRecognition::on_btnBuildLM_clicked()
+{
+    if (ui->txtLMTrainPath->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select promts LM data for building."), QMessageBox::Ok);
+        return;
+    }
+
+    executors.execBuildLanguageModel(ui->txtLMTrainPath->text(), _isTriGram);
+}
+
+void SpeechRecognition::on_btnRunPerplexity_clicked()
+{
+    if (ui->txtLMTestPath->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Data"), tr("Please select wave LM data for testing."), QMessageBox::Ok);
+        return;
+    }
+
+    executors.execRunPerplexity(ui->txtLMTestPath->text(), _isTriGram);
+}
+
+void SpeechRecognition::on_btnLMTestBrowse_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open LM Test Data"), QString(QApplication::applicationDirPath()), tr("Text File (*.txt)"));
+
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    if (QFile::exists(filePath)) {
+        ui->txtLMTestPath->setText(filePath);
+    }
 }

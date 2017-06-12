@@ -76,6 +76,12 @@ public slots:
                   QString test = "test/test.scp", QString recout = "test/recout.mlf",
                   QString trigram = "lm/trigram", QString dict = "text/dict.dct");
 
+    void execBuildLanguageModel(QString trainPath, bool isTrigram = true, QString name = "VietnameseLM",
+                  QString trigramPath = "lm/trigram", QString emptyPath = "lm/empty.wmap",
+                                QString gramPath = "lm/gram.0");
+
+    void execRunPerplexity(QString testPath, bool isTrigram = true, QString trigramPath = "lm/trigram");
+
     void execPreparingDataTest(QString waveTestPath, QString hcopyCFG = "config/HCopy.cfg",
                                QString test = "test/test.scp",
                                QString prompts = "test/prompts.txt", QString mlfwords = "test/words.mlf");
@@ -88,6 +94,8 @@ private slots:
     void onResultLogging(QString result);
 
     void onTestLogging(QString result);
+
+    void onPerplexityLogging(QString result);
 
 private:
     QString shortPathName(const QString &file);
