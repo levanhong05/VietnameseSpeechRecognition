@@ -72,6 +72,10 @@ public slots:
                   QString test = "test/test.scp", QString recout = "test/recout.mlf",
                   QString wordnet = "text/wdnet.txt", QString dict = "text/dict.dct");
 
+    void execTestDecode(QString hdecodeCFG = "config/HDecode.cfg",
+                  QString test = "test/test.scp", QString recout = "test/recout.mlf",
+                  QString trigram = "lm/trigram", QString dict = "text/dict.dct");
+
     void execPreparingDataTest(QString waveTestPath, QString hcopyCFG = "config/HCopy.cfg",
                                QString test = "test/test.scp",
                                QString prompts = "test/prompts.txt", QString mlfwords = "test/words.mlf");

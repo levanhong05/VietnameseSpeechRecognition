@@ -31,6 +31,8 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
 
     _isLanguageModel = false;
 
+    ui->groupBoxGram->setVisible(false);
+
     _isTriGram = true;
 
     preparingData();
@@ -217,6 +219,7 @@ void SpeechRecognition::preparingData()
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/mlf");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/phones");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/wave");
+    data.mkpath(WorkCase::currentCase()->getWorkspace() + "/lm");
 
     for (int i = 0; i < 16; i++) {
         data.mkpath(WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i));
@@ -365,7 +368,11 @@ void SpeechRecognition::on_btnPromtTest_clicked()
 
 void SpeechRecognition::on_btnTest_clicked()
 {
-    executors.execTest();
+    if (!_isLanguageModel) {
+        executors.execTest();
+    } else {
+        executors.execTestDecode();
+    }
 }
 
 void SpeechRecognition::on_btnWaveTest_clicked()

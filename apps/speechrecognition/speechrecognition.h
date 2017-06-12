@@ -79,6 +79,10 @@ private slots:
 
     void on_rbnLanguagModel_toggled(bool checked);
 
+    void on_rbnBiGram_toggled(bool checked);
+
+    void on_rbnTriGram_toggled(bool checked);
+
 private:
     void preparingData();
 

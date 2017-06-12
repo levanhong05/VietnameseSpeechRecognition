@@ -892,6 +892,58 @@ void Executors::execTest(QString hviteCFG, QString test, QString recout, QString
     wait->close();
 }
 
+void Executors::execTestDecode(QString hdecodeCFG, QString test, QString recout, QString trigram, QString dict)
+{
+    ExecutingJob *job = new ExecutingJob(tr("Testing"));
+    this->_jobs.append(job);
+
+    job->exec->setName("testing");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Testing..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomLogHandler(true);
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onTestLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    job->exec->execute("HDecode -A -D -V -T 1 -C " +
+                       QApplication::applicationDirPath() + "/" + hdecodeCFG + " -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
+                       WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + test + " -t 220.0 220.0 -i " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + trigram + " -p 0.0 -s 5.0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/tiedlist");
+
+    job->exec->waitForFinished();
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while decoding."));
+    } else {
+        console.logSuccess(tr("Decoding successfull."));
+    }
+
+    wait->close();
+}
+
 void Executors::execShowResult(QString recout)
 {
     ExecutingJob *job = new ExecutingJob(tr("Testing"));
