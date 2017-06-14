@@ -32,8 +32,17 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
     _isLanguageModel = false;
 
     ui->groupBoxGram->setVisible(false);
-    ui->frameLMTrain->setVisible(false);
-    ui->frameLMTest->setVisible(false);
+
+    ui->lblLMTrainPath->setVisible(false);
+    ui->txtLMTrainPath->setVisible(false);
+    ui->btnLMTrainBrowse->setVisible(false);
+
+    ui->lblLMTestPath->setVisible(false);
+    ui->txtLMTestPath->setVisible(false);
+    ui->btnLMTestBrowse->setVisible(false);
+
+    ui->groupBoxLM->setVisible(false);
+    ui->btnRunPerplexity->setVisible(false);
 
     _isTriGram = true;
 
@@ -44,6 +53,10 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
 
     QAction *actionTesting = ui->toolBar->addAction(QIcon(":/speech/images/test.png"), tr("Testing"));
     actionTraining->setShortcut(Qt::Key_T | Qt::CTRL);
+
+    ui->toolBar->addSeparator();
+
+    ui->toolBar->addAction(ui->actionConvert_Typing);
 
     connect(actionTraining, SIGNAL(triggered(bool)), this, SLOT(startTrainingData()));
     connect(actionTesting, SIGNAL(triggered(bool)), this, SLOT(startTestingData()));
@@ -145,7 +158,7 @@ void SpeechRecognition::onTrainingDictionaryFinished()
 
     executors.execHHEd();
 
-    executors.execHVite();
+    executors.execOptimizeDataHVite();
 
     executors.execTriphones();
 
@@ -342,7 +355,7 @@ void SpeechRecognition::on_btnFixingSilence_clicked()
 
 void SpeechRecognition::on_btnOptimizeData_clicked()
 {
-    executors.execHVite();
+    executors.execOptimizeDataHVite();
 }
 
 void SpeechRecognition::on_btnCreateTriphones_clicked()
@@ -439,10 +452,15 @@ void SpeechRecognition::on_rbnPhoneticModel_toggled(bool checked)
 
     ui->groupBoxGram->setVisible(_isLanguageModel);
 
-    ui->frameLMTrain->setVisible(_isLanguageModel);
-    ui->frameLMTest->setVisible(_isLanguageModel);
+    ui->lblLMTrainPath->setVisible(_isLanguageModel);
+    ui->txtLMTrainPath->setVisible(_isLanguageModel);
+    ui->btnLMTrainBrowse->setVisible(_isLanguageModel);
 
-    ui->btnBuildLM->setVisible(_isLanguageModel);
+    ui->lblLMTestPath->setVisible(_isLanguageModel);
+    ui->txtLMTestPath->setVisible(_isLanguageModel);
+    ui->btnLMTestBrowse->setVisible(_isLanguageModel);
+
+    ui->groupBoxLM->setVisible(_isLanguageModel);
     ui->btnRunPerplexity->setVisible(_isLanguageModel);
 }
 
@@ -452,10 +470,15 @@ void SpeechRecognition::on_rbnLanguagModel_toggled(bool checked)
 
     ui->groupBoxGram->setVisible(_isLanguageModel);
 
-    ui->frameLMTrain->setVisible(_isLanguageModel);
-    ui->frameLMTest->setVisible(_isLanguageModel);
+    ui->lblLMTrainPath->setVisible(_isLanguageModel);
+    ui->txtLMTrainPath->setVisible(_isLanguageModel);
+    ui->btnLMTrainBrowse->setVisible(_isLanguageModel);
 
-    ui->btnBuildLM->setVisible(_isLanguageModel);
+    ui->lblLMTestPath->setVisible(_isLanguageModel);
+    ui->txtLMTestPath->setVisible(_isLanguageModel);
+    ui->btnLMTestBrowse->setVisible(_isLanguageModel);
+
+    ui->groupBoxLM->setVisible(_isLanguageModel);
     ui->btnRunPerplexity->setVisible(_isLanguageModel);
 }
 
@@ -469,7 +492,7 @@ void SpeechRecognition::on_rbnTriGram_toggled(bool checked)
     _isTriGram = checked;
 }
 
-void SpeechRecognition::on_btnLMBrowse_clicked()
+void SpeechRecognition::on_btnLMTrainBrowse_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(this, tr("Open LM Train Data"), QString(QApplication::applicationDirPath()), tr("Text File (*.txt)"));
 

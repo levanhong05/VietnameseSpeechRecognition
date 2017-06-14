@@ -83,13 +83,13 @@ private slots:
 
     void on_rbnTriGram_toggled(bool checked);
 
-    void on_btnLMBrowse_clicked();
-
     void on_btnBuildLM_clicked();
 
     void on_btnRunPerplexity_clicked();
 
     void on_btnLMTestBrowse_clicked();
+
+    void on_btnLMTrainBrowse_clicked();
 
 private:
     void preparingData();

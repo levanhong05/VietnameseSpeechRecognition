@@ -86,8 +86,3 @@ for ($i = 0; $i < $monoCount; $i++)
 
 
 close(OUT);
-
-
-
-
-

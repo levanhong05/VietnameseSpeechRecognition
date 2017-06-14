@@ -76,7 +76,7 @@ void Executors::onResultLogging(QString result)
         _isWrite = false;
     }
 
-    if (_isWrite) {
+    if (_isWrite && !result.isEmpty()) {
         console.logInfo(result);
     }
 }
@@ -108,7 +108,7 @@ void Executors::onPerplexityLogging(QString result)
         _isWrite = false;
     }
 
-    if (_isWrite) {
+    if (_isWrite && !result.isEmpty()) {
         console.logInfo(result);
     }
 }
@@ -575,14 +575,14 @@ void Executors::execHHEd(QString monophones1, QString silinstr, QString train, Q
     wait->close();
 }
 
-void Executors::execHVite(QString monophones1, QString dict, QString train, QString hrestCFG, QString hviteCFG)
+void Executors::execOptimizeDataHVite(QString monophones1, QString dict, QString train, QString hrestCFG, QString hviteCFG)
 {
     ExecutingJob *job = new ExecutingJob(tr("HVite"));
     this->_jobs.append(job);
 
     job->exec->setName("runHVite");
 
-    WaitingDialog *wait = new WaitingDialog(tr("Run HVite..."));
+    WaitingDialog *wait = new WaitingDialog(tr("Optimize Data - HVite..."));
 
     QIcon icon(":/speech/images/chat.png");
     wait->setWindowIcon(icon);
@@ -946,12 +946,12 @@ void Executors::execTestDecode(QString hdecodeCFG, QString test, QString recout,
     job->exec->waitForFinished();
 
     job->exec->execute("HDecode -A -D -V -T 1 -C " +
-                       QApplication::applicationDirPath() + "/" + hdecodeCFG + " -H " +
+                       QApplication::applicationDirPath() + "/" + hdecodeCFG + " -o ST -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
                        WorkCase::currentCase()->getWorkspace() + "/" + test + " -t 220.0 220.0 -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + trigram + " -p 0.0 -s 5.0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + trigram + " -p -20.0 -s 5.0 " +
                        WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
                        WorkCase::currentCase()->getWorkspace() + "/tiedlist");
 
@@ -1001,7 +1001,7 @@ void Executors::execBuildLanguageModel(QString trainPath, bool isTrigram, QStrin
 
     job->exec->waitForFinished();
 
-    job->exec->execute("LGPrep -T 1 -a 1000000 -b 2000000000 -d lm -n "+ (isTrigram ? QString::number(3) : QString::number(2)) + " " +
+    job->exec->execute("LGPrep -T 1 -a 1000000 -b 100000000 -d lm -n "+ (isTrigram ? QString::number(3) : QString::number(2)) + " " +
                        WorkCase::currentCase()->getWorkspace() + "/" + emptyPath + " " +
                        trainPath);
 

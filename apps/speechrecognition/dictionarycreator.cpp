@@ -113,6 +113,12 @@ void DictionaryCreator::create()
 
     phonemeFile.close();
 
+    words.append("SENT-START");
+    words.append("SENT-END");
+    words.append("silence");
+
+    qSort(words.begin(), words.end());
+
     //Write dictionary file
     QFile dictFile(WorkCase::currentCase()->getWorkspace() + "/text/dict.dct");
 
@@ -121,40 +127,40 @@ void DictionaryCreator::create()
     QTextStream outDic(&dictFile);
 
     foreach (QString word, words) {
-        outDic << word << "\t";
+        if (word == "SENT-START" || word == "SENT-END" || word == "silence") {
+            outDic << word << "\t" << "[] sil" << endl;
+        } else {
+            outDic << word << "\t";
 
-        QString phone = "";
+            QString phone = "";
 
-        while (word != "") {
-            if (word.length() == 1) {
-                outDic << phone << word << "\t";
+            while (word != "") {
+                if (word.length() == 1) {
+                    outDic << phone << word << "\t";
 
-                word = "";
-            } else {
-                phone += word.mid(0, 1);
+                    word = "";
+                } else {
+                    phone += word.mid(0, 1);
 
-                word = word.mid(1);
+                    word = word.mid(1);
 
-                if (phonemes.contains(phone, Qt::CaseInsensitive)) {
-                    if (!phonemes.contains(phone + word.mid(0, 1), Qt::CaseInsensitive)) {
+                    if (phonemes.contains(phone, Qt::CaseInsensitive)) {
+                        if (!phonemes.contains(phone + word.mid(0, 1), Qt::CaseInsensitive)) {
+                            outDic << phone << "\t";
+
+                            phone = "";
+                        }
+                    } else {
                         outDic << phone << "\t";
 
                         phone = "";
                     }
-                } else {
-                    outDic << phone << "\t";
-
-                    phone = "";
                 }
             }
+
+            outDic << "sp" << endl;
         }
-
-        outDic << "sp" << endl;
     }
-
-    outDic << "SENT-START" << "\t" << "[] sil" << endl;
-    outDic << "SENT-END" << "\t" << "[] sil" << endl;
-    outDic << "silence" << "\t" << "[] sil" << endl;
 
     dictFile.close();
 }

@@ -58,7 +58,7 @@ public slots:
     void execHHEd(QString monophones1 = "phones/monophones1", QString silinstr = "instruction/sil.hed",
                   QString train = "text/train.scp", QString hrestCFG = "config/HERest.cfg");
 
-    void execHVite(QString monophones1 = "phones/monophones1", QString dict = "text/dict.dct",
+    void execOptimizeDataHVite(QString monophones1 = "phones/monophones1", QString dict = "text/dict.dct",
                   QString train = "text/train.scp",
                    QString hrestCFG = "config/HERest.cfg", QString hviteCFG = "config/HVite.cfg");
 
