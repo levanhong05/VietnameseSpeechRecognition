@@ -115,7 +115,6 @@ void DictionaryCreator::create()
 
     words.append("SENT-START");
     words.append("SENT-END");
-    words.append("silence");
 
     qSort(words.begin(), words.end());
 
@@ -127,7 +126,7 @@ void DictionaryCreator::create()
     QTextStream outDic(&dictFile);
 
     foreach (QString word, words) {
-        if (word == "SENT-START" || word == "SENT-END" || word == "silence") {
+        if (word == "SENT-START" || word == "SENT-END") {
             outDic << word << "\t" << "[] sil" << endl;
         } else {
             outDic << word << "\t";
@@ -161,6 +160,8 @@ void DictionaryCreator::create()
             outDic << "sp" << endl;
         }
     }
+
+    outDic << "silence" << "\t" << "sil" << endl;
 
     dictFile.close();
 }

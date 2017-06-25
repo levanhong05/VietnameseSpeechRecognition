@@ -4,6 +4,8 @@
 #include <QShowEvent>
 #include <QMainWindow>
 
+#include "converter.h"
+
 namespace Ui {
   class SpeechRecognition;
 }
@@ -23,6 +25,8 @@ public slots:
     void onTrainingDictionaryFinished();
 
     QMenu *addMenu(const QString &title);
+
+    void onSentenceDetected(QString sentence);
 
 private slots:
     void startTrainingData();
@@ -91,6 +95,8 @@ private slots:
 
     void on_btnLMTrainBrowse_clicked();
 
+    void on_btnIncreaseGaussian_clicked();
+
 private:
     void preparingData();
 
@@ -100,6 +106,8 @@ private:
 
 private:
     Ui::SpeechRecognition *ui;
+
+    Converter *_converter;
 
     bool _isLanguageModel;
 

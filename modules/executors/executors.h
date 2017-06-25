@@ -62,10 +62,10 @@ public slots:
                   QString train = "text/train.scp",
                    QString hrestCFG = "config/HERest.cfg", QString hviteCFG = "config/HVite.cfg");
 
-    void execTriphones(QString train = "text/train.scp", QString triphones1 = "phones/triphones1",
+    void execTriphones(bool isUseLM, QString train = "text/train.scp", QString triphones1 = "phones/triphones1",
                        QString hrestCFG = "config/HERest.cfg");
 
-    void execTiedTriphones(QString wintri = "mlf/wintri.mlf", QString train = "text/train.scp",
+    void execTiedTriphones(bool isUseLM, QString wintri = "mlf/wintri.mlf", QString train = "text/train.scp",
                            QString triphones1 = "phones/triphones1", QString hrestCFG = "config/HERest.cfg");
 
     void execTest(QString hviteCFG = "config/HVite.cfg",
@@ -88,6 +88,9 @@ public slots:
 
     void execShowResult(QString recout = "test/recout.mlf");
 
+    void execIncreaseGaussian(QString wintri = "mlf/wintri.mlf", QString train = "text/train.scp",
+                                QString hrestCFG = "config/HERest.cfg");
+
 private slots:
     void onErrorLogging(QString);
 
@@ -95,7 +98,12 @@ private slots:
 
     void onTestLogging(QString result);
 
+    void onTestDecodeLogging(QString result);
+
     void onPerplexityLogging(QString result);
+
+signals:
+    void sentenceDetect(QString sentence);
 
 private:
     QString shortPathName(const QString &file);

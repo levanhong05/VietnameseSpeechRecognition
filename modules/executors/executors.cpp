@@ -85,9 +85,30 @@ void Executors::onTestLogging(QString result)
 {
     if (result.endsWith(".mfc")) {
         console.logInfo(result);
-    } else if (result.contains("==") && result.contains("frames]")) {
+    } else if (result.trimmed().startsWith("SENT-START") && result.contains("==") && result.contains("frames]")) {
         console.logExtend(result);
+
+        emit sentenceDetect(result);
+
         console.log("");
+    }
+}
+
+void Executors::onTestDecodeLogging(QString result)
+{
+    if (result.startsWith("lmla count")) {
+        _isWrite = true;
+    }
+
+    if (_isWrite) {
+        if (result.startsWith("lmla count") || result.startsWith("nprons") || result.startsWith("CPU time")) {
+            console.logInfo(result);
+        } else if (result.startsWith("Stats:")) {
+            console.logExtend(result);
+        } else if (!result.trimmed().startsWith("WARNING") && !result.trimmed().startsWith("in HDecode") &&
+                   !result.startsWith("C:\\Users\\")) {
+            console.log(result);
+        }
     }
 }
 
@@ -640,7 +661,7 @@ void Executors::execOptimizeDataHVite(QString monophones1, QString dict, QString
     wait->close();
 }
 
-void Executors::execTriphones(QString train, QString triphones1, QString hrestCFG)
+void Executors::execTriphones(bool isUseLM, QString train, QString triphones1, QString hrestCFG)
 {
     ExecutingJob *job = new ExecutingJob(tr("Triphones"));
     this->_jobs.append(job);
@@ -669,18 +690,33 @@ void Executors::execTriphones(QString train, QString triphones1, QString hrestCF
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HLEd -A -D -V -T 1 -n " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 -l * -i " +
-                       WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf " +
-                       WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.led " +
-                       WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf");
+    if (isUseLM) {
+        job->exec->execute("HLEd -A -D -V -T 1 -n " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 -l * -i " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf " +
+                           WorkCase::currentCase()->getWorkspace() + "/instruction/mktri_LM.led " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf");
+    } else {
+        job->exec->execute("HLEd -A -D -V -T 1 -n " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 -l * -i " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/wintri.mlf " +
+                           WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.led " +
+                           WorkCase::currentCase()->getWorkspace() + "/mlf/aligned.mlf");
+    }
 
     job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTriHed.pl " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones1 " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 " +
-                       WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.hed");
+    if (isUseLM) {
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTriHed_LM.pl " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones1 " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 " +
+                           WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.hed");
+    } else {
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTriHed.pl " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones1 " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/triphones1 " +
+                           WorkCase::currentCase()->getWorkspace() + "/instruction/mktri.hed");
+    }
 
     job->exec->waitForFinished();
 
@@ -715,7 +751,7 @@ void Executors::execTriphones(QString train, QString triphones1, QString hrestCF
     wait->close();
 }
 
-void Executors::execTiedTriphones(QString wintri, QString train, QString triphones1, QString hrestCFG)
+void Executors::execTiedTriphones(bool isUseLM, QString wintri, QString train, QString triphones1, QString hrestCFG)
 {
     ExecutingJob *job = new ExecutingJob(tr("TiedTriphones"));
     this->_jobs.append(job);
@@ -744,15 +780,27 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-                       WorkCase::currentCase()->getWorkspace() + "/fulllist");
+    if (isUseLM) {
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList_LM.pl " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                           WorkCase::currentCase()->getWorkspace() + "/fulllist");
+    } else {
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkFullList.pl " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                           WorkCase::currentCase()->getWorkspace() + "/fulllist");
+    }
 
     job->exec->waitForFinished();
 
-    job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
-                       WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
-                       WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+    if (isUseLM) {
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree_LM.pl 350 " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                           WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+    } else {
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 350 " +
+                           WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
+                           WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
+    }
 
     job->exec->waitForFinished();
 
@@ -782,6 +830,57 @@ void Executors::execTiedTriphones(QString wintri, QString train, QString triphon
         console.logError(tr("Errors occurred while create tied state triphones."));
     } else {
         console.logSuccess(tr("Create tied state triphones successfull."));
+    }
+
+    wait->close();
+}
+
+void Executors::execIncreaseGaussian(QString wintri, QString train, QString hrestCFG)
+{
+    ExecutingJob *job = new ExecutingJob(tr("CrossWordTriphones"));
+    this->_jobs.append(job);
+
+    job->exec->setName("createCrossWordTriphones");
+
+    WaitingDialog *wait = new WaitingDialog(tr("Create Cross-Word Triphones..."));
+
+    QIcon icon(":/speech/images/chat.png");
+    wait->setWindowIcon(icon);
+
+    connect(job->exec, SIGNAL(error()), wait, SLOT(close()));
+
+    job->exec->setUseCustomErrorHandler(true);
+
+    connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
+
+    job->exec->start();
+
+    wait->show();
+
+#ifdef Q_OS_LINUX
+    job->exec->directExecute("source /opt/htk341/etc/bashrc");
+#else
+    job->exec->directExecute("call " + shortPathName(QApplication::applicationDirPath()) + "\\HTK\\setvars.bat");
+#endif
+    job->exec->waitForFinished();
+
+    for (int i = 16; i <= 20; i++) {
+        job->exec->execute("HERest -A -D -V -T 1 -T 1 -C " +
+                           QApplication::applicationDirPath() + "/" + hrestCFG + " -I " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + wintri + " -t 250.0 150.0 3000.0 -s stats -S " +
+                           WorkCase::currentCase()->getWorkspace() + "/" + train + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/macros" + " -H " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i - 1) + "/hmmdefs" + " -M " +
+                           WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i) + " " +
+                           WorkCase::currentCase()->getWorkspace() + "/tiedlist");
+
+        job->exec->waitForFinished();
+    }
+
+    if (job->exec->lastExitCode() != 0) {
+        console.logError(tr("Errors occurred while create cross word triphones."));
+    } else {
+        console.logSuccess(tr("Create cross word triphones successfull."));
     }
 
     wait->close();
@@ -932,7 +1031,7 @@ void Executors::execTestDecode(QString hdecodeCFG, QString test, QString recout,
     job->exec->setUseCustomErrorHandler(true);
 
     connect(job->exec, SIGNAL(customErrorHandler(QString)), this, SLOT(onErrorLogging(QString)));
-    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onTestLogging(QString)));
+    connect(job->exec, SIGNAL(customLogHandler(QString)), this, SLOT(onTestDecodeLogging(QString)));
 
     job->exec->start();
 
@@ -945,14 +1044,14 @@ void Executors::execTestDecode(QString hdecodeCFG, QString test, QString recout,
 #endif
     job->exec->waitForFinished();
 
-    job->exec->execute("HDecode -A -D -V -T 1 -C " +
-                       QApplication::applicationDirPath() + "/" + hdecodeCFG + " -o ST -H " +
+    job->exec->execute("HDecode -C " +
+                       QApplication::applicationDirPath() + "/" + hdecodeCFG + " -a 15.0 -o ST -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm15/macros -H " +
                        WorkCase::currentCase()->getWorkspace() + "/hmm15/hmmdefs -S " +
                        WorkCase::currentCase()->getWorkspace() + "/" + test + " -t 220.0 220.0 -i " +
                        WorkCase::currentCase()->getWorkspace() + "/" + recout + " -w " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + trigram + " -p -20.0 -s 5.0 " +
-                       WorkCase::currentCase()->getWorkspace() + "/" + dict + " " +
+                       WorkCase::currentCase()->getWorkspace() + "/" + trigram + " -p 0.0 -s 5.0 " +
+                       WorkCase::currentCase()->getWorkspace() + "/text/dict.hdecode " +
                        WorkCase::currentCase()->getWorkspace() + "/tiedlist");
 
     job->exec->waitForFinished();
@@ -962,6 +1061,8 @@ void Executors::execTestDecode(QString hdecodeCFG, QString test, QString recout,
     } else {
         console.logSuccess(tr("Decoding successfull."));
     }
+
+    _isWrite = false;
 
     wait->close();
 }

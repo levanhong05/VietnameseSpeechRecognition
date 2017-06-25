@@ -61,7 +61,11 @@ SpeechRecognition::SpeechRecognition(QWidget *parent) :
     connect(actionTraining, SIGNAL(triggered(bool)), this, SLOT(startTrainingData()));
     connect(actionTesting, SIGNAL(triggered(bool)), this, SLOT(startTestingData()));
 
+    connect(&executors, SIGNAL(sentenceDetect(QString)), this, SLOT(onSentenceDetected(QString)));
+
     QWidget::showMaximized();
+
+    _converter = new Converter();
 }
 
 SpeechRecognition::~SpeechRecognition()
@@ -72,6 +76,15 @@ SpeechRecognition::~SpeechRecognition()
 QMenu *SpeechRecognition::addMenu(const QString &title)
 {
     return ui->menuBar->addMenu(title);
+}
+
+void SpeechRecognition::onSentenceDetected(QString sentence)
+{
+    sentence = sentence.mid(0, sentence.lastIndexOf("SENT-END"));
+
+    sentence = sentence.remove("SENT-START").trimmed();
+
+    console.logExtend("--> " + _converter->convertTelex2Unicode(sentence));
 }
 
 void SpeechRecognition::startTrainingData()
@@ -160,11 +173,9 @@ void SpeechRecognition::onTrainingDictionaryFinished()
 
     executors.execOptimizeDataHVite();
 
-    executors.execTriphones();
+    executors.execTriphones(_isLanguageModel);
 
-    //executors.execTiedTriphone();
-
-    executors.execTiedTriphones();
+    executors.execTiedTriphones(_isLanguageModel);
 
     console.logSuccess(tr("Training successfull!!!"));
 }
@@ -255,7 +266,7 @@ void SpeechRecognition::preparingData()
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/wave");
     data.mkpath(WorkCase::currentCase()->getWorkspace() + "/lm");
 
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 21; i++) {
         data.mkpath(WorkCase::currentCase()->getWorkspace() + "/hmm" + QString::number(i));
     }
 }
@@ -360,14 +371,12 @@ void SpeechRecognition::on_btnOptimizeData_clicked()
 
 void SpeechRecognition::on_btnCreateTriphones_clicked()
 {
-    executors.execTriphones();
+    executors.execTriphones(_isLanguageModel);
 }
 
 void SpeechRecognition::on_btnTiedTriphones_clicked()
 {
-    //executors.execTiedTriphone();
-
-    executors.execTiedTriphones();
+    executors.execTiedTriphones(_isLanguageModel);
 }
 
 void SpeechRecognition::on_groupBoxTrainingStep_toggled(bool toggled)
@@ -405,6 +414,29 @@ void SpeechRecognition::on_btnTest_clicked()
     if (!_isLanguageModel) {
         executors.execTest();
     } else {
+        QFile file(WorkCase::currentCase()->getWorkspace() + "/text/dict.hdecode");
+        file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
+
+        QFile fileDictOld(WorkCase::currentCase()->getWorkspace() + "/text/dict.dct");
+        fileDictOld.open(QIODevice::ReadOnly | QIODevice::Text);
+
+        QTextStream in(&fileDictOld);
+        QTextStream out(&file);
+
+        QString line = "";
+
+        while (!in.atEnd()) {
+            line = in.readLine();
+
+            if (!line.startsWith("silence")) {
+                line = line.remove("\tsp").trimmed();
+                out << line << endl;
+            }
+        }
+
+        fileDictOld.close();
+        file.close();
+
         executors.execTestDecode();
     }
 }
@@ -536,4 +568,9 @@ void SpeechRecognition::on_btnLMTestBrowse_clicked()
     if (QFile::exists(filePath)) {
         ui->txtLMTestPath->setText(filePath);
     }
+}
+
+void SpeechRecognition::on_btnIncreaseGaussian_clicked()
+{
+    executors.execIncreaseGaussian();
 }
