@@ -26,21 +26,18 @@ open(OUT, ">$fulllist");
 my $monoCount = 0;
 
 # Output all monophones including sp
-while($line = <IN>) {
-    $line =~ s/[\n\r]//g;
+while($line = <IN>)
+{
+    $line =~ s/[\n\r]//g;		
 
-    if (length($line) > 0) {
-        $mono[$monoCount] = $line;    
-        $monoCount++;
-        print OUT $line . "\n";
+    if (length($line) > 0)
+    {
+	$mono[$monoCount] = $line;	
+	$monoCount++;
+	print OUT $line . "\n";
     }
 }
-
-$mono[$monoCount] = "sp";
-$monoCount++;
-
 close(IN);
-
 print OUT "sp\n";
 
 # Now all possible left biphones
@@ -51,10 +48,10 @@ for ($i = 0; $i < $monoCount; $i++)
 {
     for ($j = 0; $j < $monoCount; $j++)
     {
-    if ($mono[$j] !~ /sil/)
-    {
-        print OUT $mono[$i] . "-" . $mono[$j] . "\n";
-    }
+	if ($mono[$j] !~ /sil/)
+	{
+	    print OUT $mono[$i] . "-" . $mono[$j] . "\n";
+	}
     }
 }
 
@@ -63,23 +60,27 @@ for ($i = 0; $i < $monoCount; $i++)
 {
     for ($j = 0; $j < $monoCount; $j++)
     {
-    if ($mono[$i] !~ /sil/)
-    {
-        print OUT $mono[$i] . "+" . $mono[$j] . "\n";
-    }
+	if ($mono[$i] !~ /sil/)
+	{
+	    print OUT $mono[$i] . "+" . $mono[$j] . "\n";
+	}
     }
 }
 
 # Triphones
 my $k;
 
-for ($i = 0; $i < $monoCount; $i++) {
-    for ($j = 0; $j < $monoCount; $j++) {
-        #if ($mono[$j] !~ /sil/) {
-            for ($k = 0; $k < $monoCount; $k++) {
-                print OUT $mono[$i] . "-" . $mono[$j] . "+" . $mono[$k] . "\n";    
-            }
-        #}
+for ($i = 0; $i < $monoCount; $i++)
+{
+    for ($j = 0; $j < $monoCount; $j++)
+    {
+	if ($mono[$j] !~ /sil/)
+	{
+	    for ($k = 0; $k < $monoCount; $k++)
+	    {
+		print OUT $mono[$i] . "-" . $mono[$j] . "+" . $mono[$k] . "\n";	
+	    }
+	}
     }
 }
 
