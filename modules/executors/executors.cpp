@@ -797,7 +797,7 @@ void Executors::execTiedTriphones(bool isUseLM, QString wintri, QString train, Q
                            WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
                            WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
     } else {
-        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 350 " +
+        job->exec->execute("perl " + QApplication::applicationDirPath() + "/perl/mkTree.pl 40 " +
                            WorkCase::currentCase()->getWorkspace() + "/phones/monophones0 " +
                            WorkCase::currentCase()->getWorkspace() + "/instruction/tree.hed");
     }
